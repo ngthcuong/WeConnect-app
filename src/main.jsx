@@ -9,6 +9,7 @@ import RootLayout from "@pages/RootLayout";
 import ModalProvider from "@context/ModalProvider";
 // import RegisterPage from '@pages/RegisterPage'
 import RegisterPage from "../src/pages/RegisterPage";
+import AuthLayout from "@pages/AuthLayout";
 
 const router = createBrowserRouter([
   {
@@ -19,8 +20,13 @@ const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: "/register",
-        element: <RegisterPage />,
+        element: <AuthLayout />,
+        children: [
+          {
+            path: "/register",
+            element: <RegisterPage />,
+          },
+        ],
       },
     ],
   },
