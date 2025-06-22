@@ -1,6 +1,5 @@
 import FormField from "@components/FormField";
 import OTPInput from "@components/FormInputs/OTPInput";
-import TextInput from "@components/FormInputs/TextInput";
 import { Button } from "@mui/material";
 import React from "react";
 import { useForm } from "react-hook-form";
