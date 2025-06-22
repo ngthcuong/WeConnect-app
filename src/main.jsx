@@ -7,9 +7,10 @@ import theme from "@/configs/mui.config";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import RootLayout from "@pages/RootLayout";
 import ModalProvider from "@context/ModalProvider";
-// import RegisterPage from '@pages/RegisterPage'
-import RegisterPage from "../src/pages/RegisterPage";
-import AuthLayout from "@pages/AuthLayout";
+
+import RegisterPage from "./pages/auth/RegisterPage";
+import AuthLayout from "@pages/auth/AuthLayout";
+import LoginPage from "@pages/auth/LoginPage";
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
           {
             path: "/register",
             element: <RegisterPage />,
+          },
+          {
+            path: "/login",
+            element: <LoginPage />,
           },
         ],
       },

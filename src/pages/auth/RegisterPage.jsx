@@ -10,7 +10,6 @@ const RegisterPage = () => {
 
   return (
     <div>
-      <p className="text-center text-2xl font-bold">Register</p>
       <p className="my-1.5 text-xl text-gray-600">Adventure starts here</p>
       <p className="text-sm text-gray-600">
         Make your app management easy and fun!
