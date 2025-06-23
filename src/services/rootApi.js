@@ -2,7 +2,16 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const rootApi = createApi({
   reducerPath: "api",
-  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_BASE_URL }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: import.meta.env.VITE_BASE_URL,
+    prepareHeaders: (headers, { getState }) => {
+      const token = getState().auth.accessToken;
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+      return headers;
+    },
+  }),
   endpoints: (builder) => {
     return {
       register: builder.mutation({
@@ -32,9 +41,16 @@ export const rootApi = createApi({
           };
         },
       }),
+      getAuthUser: builder.query({
+        query: () => "/auth-user",
+      }),
     };
   },
 });
 
-export const { useRegisterMutation, useLoginMutation, useVerifyOTPMutation } =
-  rootApi;
+export const {
+  useRegisterMutation,
+  useLoginMutation,
+  useVerifyOTPMutation,
+  useGetAuthUserQuery,
+} = rootApi;
