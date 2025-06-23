@@ -1,12 +1,12 @@
 import FormField from "@components/FormField";
 import TextInput from "@components/FormInputs/TextInput";
 import { Button } from "@mui/material";
-import React from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 
 const LoginPage = () => {
   const { control } = useForm();
+
   return (
     <div>
       <p className="my-1.5 text-xl text-gray-600">Welcome to WeConnect!</p>
