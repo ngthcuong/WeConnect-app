@@ -1,12 +1,13 @@
 {
-    "compilerOptions": {
-        "baseUrl": "./",
-        "paths": {
-            "@components/*": ["src/components/*"],
-            "@libs/*": ["src/libs/*"],
-            "@pages/*": ["src/pages/*"],
-            "@hooks/*": ["src/hooks/*"],
-            "@context/*": ["src/context/*"]
-        }
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@components/*": ["src/components/*"],
+      "@libs/*": ["src/libs/*"],
+      "@pages/*": ["src/pages/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@context/*": ["src/context/*"],
+      "@redux/*": ["src/redux/*"]
     }
+  }
 }
