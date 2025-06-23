@@ -47,7 +47,19 @@ const RegisterPage = () => {
       dispatch(showSnackbar({ message: data?.message, severity: "success" }));
       navigate("/login");
     }
-  }, [data?.message, isSuccess, dispatch, navigate]);
+    if (isError) {
+      dispatch(
+        showSnackbar({ message: error?.data?.message, severity: "error" }),
+      );
+    }
+  }, [
+    data?.message,
+    isSuccess,
+    dispatch,
+    navigate,
+    isError,
+    error?.data?.message,
+  ]);
 
   return (
     <div>
