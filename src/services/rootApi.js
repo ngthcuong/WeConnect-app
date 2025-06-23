@@ -1,17 +1,33 @@
+import { logout } from "@redux/slices/authSlice";
+// import { persistor } from "@redux/store";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+const baseQuery = fetchBaseQuery({
+  baseUrl: import.meta.env.VITE_BASE_URL,
+  prepareHeaders: (headers, { getState }) => {
+    const token = getState().auth.accessToken;
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+    return headers;
+  },
+});
+
+const baseQueryWithForceLogout = async (args, api, extraOptions) => {
+  let result = await baseQuery(args, api, extraOptions);
+
+  if (result?.error?.status === 401) {
+    api.dispatch(logout());
+    // await persistor.purge();
+    window.location.href = "/login";
+  }
+
+  return result;
+};
 
 export const rootApi = createApi({
   reducerPath: "api",
-  baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_BASE_URL,
-    prepareHeaders: (headers, { getState }) => {
-      const token = getState().auth.accessToken;
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery: baseQueryWithForceLogout,
   endpoints: (builder) => {
     return {
       register: builder.mutation({
