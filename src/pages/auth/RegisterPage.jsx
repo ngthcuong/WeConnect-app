@@ -7,14 +7,36 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 const RegisterPage = () => {
-  const { control, handleSubmit } = useForm();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [register, { data = {}, isLoading, isError, error, isSuccess }] =
     useRegisterMutation();
+
+  // Form validation cho form
+  const formSchema = yup.object().shape({
+    fullName: yup.string().required("Full name is required"),
+    email: yup
+      .string()
+      .matches(
+        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+        "Email is not valid",
+      )
+      .required("Email is not valid"),
+    password: yup.string().min(6).required("Password is required"),
+  });
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(formSchema),
+  });
 
   const onSubmit = (formData) => {
     register(formData);
@@ -42,12 +64,14 @@ const RegisterPage = () => {
           name={"fullName"}
           control={control}
           label={"Full Name"}
+          error={errors["fullName"]}
         />
         <FormField
           Component={TextInput}
           name={"email"}
           control={control}
           label={"Email"}
+          error={errors["email"]}
         />
         <FormField
           Component={TextInput}
@@ -55,6 +79,7 @@ const RegisterPage = () => {
           control={control}
           label={"Password"}
           type={"password"}
+          error={errors["password"]}
         />
         {isLoading ? (
           <CircularProgress
