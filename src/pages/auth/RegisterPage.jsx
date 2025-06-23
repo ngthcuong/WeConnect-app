@@ -1,25 +1,31 @@
 import FormField from "@components/FormField";
 import TextInput from "@components/FormInputs/TextInput";
-import { Alert, Button } from "@mui/material";
+import { Alert, Button, CircularProgress } from "@mui/material";
+import { showSnackbar } from "@redux/slices/snackBarSlice";
 import { useRegisterMutation } from "@services/rootApi";
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
   const { control, handleSubmit } = useForm();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const [register, { data, isLoading, isError, error }] = useRegisterMutation();
+  const [register, { data = {}, isLoading, isError, error, isSuccess }] =
+    useRegisterMutation();
 
   const onSubmit = (formData) => {
-    console.log(formData);
     register(formData);
   };
 
-  console.log(data);
-  console.log(isLoading);
-  console.log(isError);
-  console.log(error);
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(showSnackbar({ message: data?.message, severity: "success" }));
+      navigate("/login");
+    }
+  }, [data?.message, isSuccess, dispatch, navigate]);
 
   return (
     <div>
@@ -50,9 +56,17 @@ const RegisterPage = () => {
           label={"Password"}
           type={"password"}
         />
-        <Button variant="contained" color="primary" type="submit">
-          Sign up
-        </Button>
+        {isLoading ? (
+          <CircularProgress
+            className="mx-auto flex items-center justify-center"
+            size={24}
+          />
+        ) : (
+          <Button variant="contained" color="primary" type="submit">
+            Sign up
+          </Button>
+        )}
+
         {isError && <Alert severity="error">{error?.data?.message}</Alert>}
       </form>
       <p className="mt-4 text-center">
