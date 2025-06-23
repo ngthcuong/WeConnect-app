@@ -13,8 +13,10 @@ import AuthLayout from "@pages/auth/AuthLayout";
 import LoginPage from "@pages/auth/LoginPage";
 import OTPVerifyPage from "@pages/auth/OTPVerifyPage";
 import { Provider } from "react-redux";
-import { store } from "@redux/store";
+import { persistor, store } from "@redux/store";
 import ProtectedLayout from "@pages/ProtectedLayout";
+import { PersistGate } from "redux-persist/integration/react";
+import { CircularProgress } from "@mui/material";
 
 const router = createBrowserRouter([
   {
@@ -52,11 +54,13 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <Provider store={store}>
-    {/* Sử dụng theme của MUI được custom */}
-    <ThemeProvider theme={theme}>
-      <ModalProvider>
-        <RouterProvider router={router} />
-      </ModalProvider>
-    </ThemeProvider>
+    <PersistGate loading={<CircularProgress />} persistor={persistor}>
+      {/* Sử dụng theme của MUI được custom */}
+      <ThemeProvider theme={theme}>
+        <ModalProvider>
+          <RouterProvider router={router} />
+        </ModalProvider>
+      </ThemeProvider>
+    </PersistGate>
   </Provider>,
 );
