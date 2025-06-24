@@ -1,3 +1,4 @@
+import { useUserInfo } from "@hooks/useUserInfo";
 import { AccountCircle, Notifications, Search } from "@mui/icons-material";
 import {
   AppBar,
@@ -12,6 +13,8 @@ import React, { useState } from "react";
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
+
+  const userInfo = useUserInfo();
 
   const handleOpenMenuAccount = (event) => {
     setAnchorEl(event.target);
