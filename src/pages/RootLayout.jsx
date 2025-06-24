@@ -16,7 +16,7 @@ const RootLayout = () => {
   };
 
   return (
-    <div>
+    <div className="text-gray-700">
       <Suspense fallback={<p>Loading</p>}>
         <Outlet />
       </Suspense>
