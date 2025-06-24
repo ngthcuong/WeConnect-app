@@ -1,3 +1,4 @@
+import Header from "@components/Header";
 import { Button } from "@mui/material";
 import { showSnackbar } from "@redux/slices/snackBarSlice";
 import React from "react";
@@ -12,7 +13,7 @@ const HomePage = () => {
 
   return (
     <div>
-      <h1>Home Page</h1>
+      <Header />
       <Button variant="contained" color="primary" onClick={handleShowSnackbar}>
         Click
       </Button>
