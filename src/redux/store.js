@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authReducer from "./slices/authSlice";
 import { rootApi } from "@services/rootApi";
 import snackBarReducer from "./slices/snackBarSlice";
+import drawerReducer from "./slices/drawerSlice";
 import storage from "redux-persist/lib/storage"; // localStorage
 import { persistReducer, persistStore } from "redux-persist";
 import {
@@ -26,6 +27,7 @@ const persistedReducer = persistReducer(
   combineReducers({
     auth: authReducer,
     snackbar: snackBarReducer,
+    drawer: drawerReducer,
     [rootApi.reducerPath]: rootApi.reducer,
   }),
 );

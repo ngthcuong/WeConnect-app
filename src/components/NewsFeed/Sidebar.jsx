@@ -1,17 +1,26 @@
 import styled from "@emotion/styled";
 import {
   AccountCircle,
+  Close,
   HomeOutlined,
   Hub,
   Language,
   Message,
   People,
 } from "@mui/icons-material";
-import { List, ListSubheader } from "@mui/material";
-import React from "react";
+import {
+  Drawer,
+  IconButton,
+  List,
+  ListSubheader,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+import { hideDrawer } from "@redux/slices/drawerSlice";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
-const ListStyled = styled("List")`
+const ListStyled = styled(List)`
   padding: 16px 12px;
   border-radius: 10px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
@@ -21,7 +30,7 @@ const ListStyled = styled("List")`
   gap: 10px;
 `;
 
-const Sidebar = () => {
+const SidebarContent = () => {
   return (
     <div className="flex w-64 flex-col gap-4">
       <ListStyled>
@@ -57,6 +66,34 @@ const Sidebar = () => {
         </Link>
       </ListStyled>
     </div>
+  );
+};
+
+const Sidebar = () => {
+  const theme = useTheme();
+  const dispatch = useDispatch();
+  const isMoble = useMediaQuery(theme.breakpoints.down("sm"));
+  const isShowDrawer = useSelector((state) => state.drawer.isDrawerOpen);
+  console.log(isShowDrawer);
+
+  return isMoble ? (
+    <Drawer
+      open={isShowDrawer}
+      onClose={() => dispatch(hideDrawer())}
+      classes={{ paper: "p-4 flex flex-col gap-4 bg-[#F8F7FA]" }}
+    >
+      <div className="flex justify-between">
+        <Link to={"/"}>
+          <img src="/weconnect-logo.png" className="h-10" />
+        </Link>
+        <IconButton>
+          <Close onClick={() => dispatch(hideDrawer())} />
+        </IconButton>
+      </div>
+      <SidebarContent />;
+    </Drawer>
+  ) : (
+    <SidebarContent />
   );
 };
 

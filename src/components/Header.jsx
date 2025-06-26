@@ -1,6 +1,11 @@
 import { useLogout } from "@hooks/useLogout";
 import { useUserInfo } from "@hooks/useUserInfo";
-import { AccountCircle, Notifications, Search } from "@mui/icons-material";
+import {
+  AccountCircle,
+  MenuOpen,
+  Notifications,
+  Search,
+} from "@mui/icons-material";
 import {
   AppBar,
   Avatar,
@@ -10,10 +15,20 @@ import {
   MenuItem,
   TextField,
   Toolbar,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
+import { showDrawer } from "@redux/slices/drawerSlice";
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 
 const Header = () => {
+  const dispatch = useDispatch();
+
+  const theme = useTheme();
+  const isMoble = useMediaQuery(theme.breakpoints.down("sm"));
+
   const [anchorEl, setAnchorEl] = useState(null);
 
   const userInfo = useUserInfo();
@@ -49,24 +64,35 @@ const Header = () => {
   return (
     <AppBar color="white" position="sticky" className="py-4">
       <Toolbar className="flex !min-h-fit justify-between">
-        <div className="flex items-center gap-6">
-          <div>
-            <img src="/weconnect-logo.png" className="h-10" />
+        {!isMoble ? (
+          <div className="flex items-center gap-6">
+            <div>
+              <Link to={"/"}>
+                <img src="/weconnect-logo.png" className="h-10" />
+              </Link>
+            </div>
+            <div className="flex items-center gap-2">
+              <Search />
+              <TextField
+                variant="standard"
+                placeholder="Search..."
+                name="search"
+                slotProps={{
+                  input: { className: "h-10 px-3 py-2 " },
+                  htmlInput: { className: "!p-0" },
+                }}
+              />
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Search />
-            <TextField
-              variant="standard"
-              placeholder="Search..."
-              name="search"
-              slotProps={{
-                input: { className: "h-10 px-3 py-2 " },
-                htmlInput: { className: "!p-0" },
-              }}
-            />
-          </div>
-        </div>
+        ) : (
+          <IconButton onClick={() => dispatch(showDrawer())}>
+            <MenuOpen />
+          </IconButton>
+        )}
         <div>
+          <IconButton size="small">
+            <Search />
+          </IconButton>
           <IconButton size="small">
             <Badge badgeContent={4} color="error">
               <Notifications />
