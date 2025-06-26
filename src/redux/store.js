@@ -3,6 +3,7 @@ import authReducer from "./slices/authSlice";
 import { rootApi } from "@services/rootApi";
 import snackBarReducer from "./slices/snackBarSlice";
 import drawerReducer from "./slices/drawerSlice";
+import dialogReducer from "./slices/dialogSlice";
 import storage from "redux-persist/lib/storage"; // localStorage
 import { persistReducer, persistStore } from "redux-persist";
 import {
@@ -28,6 +29,7 @@ const persistedReducer = persistReducer(
     auth: authReducer,
     snackbar: snackBarReducer,
     drawer: drawerReducer,
+    dialog: dialogReducer,
     [rootApi.reducerPath]: rootApi.reducer,
   }),
 );

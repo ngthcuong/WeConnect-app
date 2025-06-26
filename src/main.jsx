@@ -17,6 +17,7 @@ import { persistor, store } from "@redux/store";
 import ProtectedLayout from "@pages/ProtectedLayout";
 import { PersistGate } from "redux-persist/integration/react";
 import { CircularProgress } from "@mui/material";
+import Dialog from "@components/NewsFeed/Dialog";
 
 const router = createBrowserRouter([
   {
@@ -57,9 +58,10 @@ createRoot(document.getElementById("root")).render(
     <PersistGate loading={<CircularProgress />} persistor={persistor}>
       {/* Sử dụng theme của MUI được custom */}
       <ThemeProvider theme={theme}>
-        <ModalProvider>
-          <RouterProvider router={router} />
-        </ModalProvider>
+        {/* <ModalProvider> */}
+        <RouterProvider router={router} />
+        <Dialog />
+        {/* </ModalProvider> */}
       </ThemeProvider>
     </PersistGate>
   </Provider>,
