@@ -5,7 +5,7 @@ const initialState = {
   maxWidth: "xs",
   fullWidth: true,
   title: null,
-  content: null,
+  contentType: null,
   actions: null,
 };
 

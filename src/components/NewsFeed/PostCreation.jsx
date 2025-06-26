@@ -1,8 +1,35 @@
 import { useUserInfo } from "@hooks/useUserInfo";
 import { Avatar, TextField } from "@mui/material";
 import { showDialog } from "@redux/slices/dialogSlice";
-import React from "react";
+import React, { useCallback, useState } from "react";
+import { useDropzone } from "react-dropzone";
 import { useDispatch } from "react-redux";
+
+export const ImageUploader = () => {
+  const [image, setImage] = useState(null);
+
+  const onDrop = useCallback((acceptedFiles) => {
+    // Do something with the files
+    setImage(acceptedFiles[0]);
+  }, []);
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    multiple: false,
+    accept: "image/*",
+  });
+
+  return (
+    <div {...getRootProps()}>
+      <input {...getInputProps()} />
+      {isDragActive ? (
+        <p>Drop the files here ...</p>
+      ) : (
+        <p>Drag 'n' drop some files here, or click to select files</p>
+      )}
+      {image && <img src={URL.createObjectURL(image)} alt="image" />}
+    </div>
+  );
+};
 
 const PostCreation = () => {
   const dispatch = useDispatch();
@@ -25,15 +52,7 @@ const PostCreation = () => {
             dispatch(
               showDialog({
                 title: "Create Post",
-                content: (
-                  <div>
-                    <TextField
-                      fullWidth
-                      size="small"
-                      placeholder="What's on your mind?"
-                    />
-                  </div>
-                ),
+                contentType: "newPost",
               }),
             )
           }

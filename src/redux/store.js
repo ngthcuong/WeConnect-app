@@ -20,7 +20,7 @@ const persistConfig = {
   key: "root",
   version: 1,
   storage,
-  blacklist: [rootApi.reducerPath], // không lưu trạng thái của rootApi.reducerPath
+  blacklist: [rootApi.reducerPath, "dialog", "drawer", "snackbar"], // không lưu trạng thái của rootApi.reducerPath
 };
 
 const persistedReducer = persistReducer(
