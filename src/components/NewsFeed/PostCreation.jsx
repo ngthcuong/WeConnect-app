@@ -1,5 +1,5 @@
 import { useUserInfo } from "@hooks/useUserInfo";
-import { Avatar, TextField } from "@mui/material";
+import { Avatar, Chip, TextField } from "@mui/material";
 import { showDialog } from "@redux/slices/dialogSlice";
 import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -19,21 +19,31 @@ export const ImageUploader = () => {
   });
 
   return (
-    <div {...getRootProps()}>
-      <input {...getInputProps()} />
-      {isDragActive ? (
-        <p>Drop the files here ...</p>
-      ) : (
-        <p>Drag 'n' drop some files here, or click to select files</p>
+    <div>
+      <div
+        {...getRootProps({
+          className:
+            "flex justify-center items-center bg-slate-100 px-2 rounded-sm h-14 mt-3 cursor-pointer",
+        })}
+      >
+        <input {...getInputProps()} />
+        {isDragActive ? (
+          <p>Drop the files here ...</p>
+        ) : (
+          <p>Drag 'n' drop some files here, or click to select files</p>
+        )}
+      </div>
+      {image && (
+        <div className="mt-3">
+          <Chip label={image.name} onDelete={() => setImage(null)} />
+        </div>
       )}
-      {image && <img src={URL.createObjectURL(image)} alt="image" />}
     </div>
   );
 };
 
 const PostCreation = () => {
   const dispatch = useDispatch();
-
   const userInfo = useUserInfo();
 
   return (

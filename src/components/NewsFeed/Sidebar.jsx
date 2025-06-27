@@ -72,7 +72,7 @@ const SidebarContent = () => {
 const Sidebar = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
-  const isMoble = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMoble = useMediaQuery(theme.breakpoints.down("md"));
   const isShowDrawer = useSelector((state) => state.drawer.isDrawerOpen);
   console.log(isShowDrawer);
 

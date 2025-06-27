@@ -1,24 +1,14 @@
 import {
-  Button,
-  DialogActions,
   DialogContent,
   DialogTitle,
+  IconButton,
   Dialog as MUIDialog,
-  TextField,
 } from "@mui/material";
 import { hideDialog } from "@redux/slices/dialogSlice";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { ImageUploader } from "./PostCreation";
-
-const NewPostDialog = () => {
-  return (
-    <div>
-      <TextField fullWidth size="small" placeholder="What's on your mind?" />
-      <ImageUploader />
-    </div>
-  );
-};
+import { Close } from "@mui/icons-material";
+import NewPostDialog from "./configs/NewPostDialog";
 
 const DynamicContent = ({ contentType }) => {
   switch (contentType) {
@@ -32,8 +22,9 @@ const DynamicContent = ({ contentType }) => {
 const Dialog = () => {
   const dispatch = useDispatch();
 
-  const { open, maxWidth, fullWidth, title, contentType, actions } =
-    useSelector((state) => state.dialog);
+  const { open, maxWidth, fullWidth, title, contentType } = useSelector(
+    (state) => state.dialog,
+  );
 
   return (
     <MUIDialog
@@ -42,11 +33,15 @@ const Dialog = () => {
       fullWidth={fullWidth}
       onClose={() => dispatch(hideDialog())}
     >
-      <DialogTitle>{title}</DialogTitle>
+      <DialogTitle className="flex justify-between">
+        {title}
+        <IconButton>
+          <Close onClick={() => dispatch(hideDialog())} />
+        </IconButton>
+      </DialogTitle>
       <DialogContent>
         <DynamicContent contentType={contentType} />
       </DialogContent>
-      <DialogActions>{actions}</DialogActions>
     </MUIDialog>
   );
 };
