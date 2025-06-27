@@ -1,17 +1,20 @@
 import { useUserInfo } from "@hooks/useUserInfo";
 import { Avatar, Chip, TextField } from "@mui/material";
 import { showDialog } from "@redux/slices/dialogSlice";
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { useDispatch } from "react-redux";
 
-export const ImageUploader = () => {
-  const [image, setImage] = useState(null);
+export const ImageUploader = ({ image, setImage }) => {
+  // const [image, setImage] = useState(null);
 
-  const onDrop = useCallback((acceptedFiles) => {
-    // Do something with the files
-    setImage(acceptedFiles[0]);
-  }, []);
+  const onDrop = useCallback(
+    (acceptedFiles) => {
+      // Do something with the files
+      setImage(acceptedFiles[0]);
+    },
+    [setImage],
+  );
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     multiple: false,
