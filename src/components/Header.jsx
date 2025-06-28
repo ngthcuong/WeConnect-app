@@ -62,7 +62,7 @@ const Header = () => {
   );
 
   return (
-    <AppBar color="white" position="sticky" className="py-4">
+    <AppBar color="white" position="" className="py-4">
       <Toolbar className="flex !min-h-fit justify-between">
         {!isMoble ? (
           <div className="flex items-center gap-6">
