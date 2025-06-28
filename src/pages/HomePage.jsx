@@ -7,7 +7,7 @@ import React from "react";
 
 const HomePage = () => {
   return (
-    <div className="h-screen bg-[#F8F7FA]">
+    <div className="h-100vh bg-[#F8F7FA]">
       <Header />
       <div className="flex gap-4 p-6">
         <div>

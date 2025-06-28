@@ -101,9 +101,11 @@ export const rootApi = createApi({
             method: "POST",
           };
         },
+        invalidatesTags: ["Posts"],
       }),
       getPosts: builder.query({
         query: () => "/posts",
+        providesTags: ["Posts"],
       }),
     };
   },
