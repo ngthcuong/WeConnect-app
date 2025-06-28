@@ -3,16 +3,9 @@ import { Avatar, Button } from "@mui/material";
 import dayjs from "dayjs";
 import React from "react";
 
-const Post = ({
-  fullName,
-  content = "Don't do it!",
-  image = "https://img.uxcel.com/practices/lorem-ipsum-1629200698112/a-1704914000276-2x.jpg",
-  likes,
-  comments,
-  createdAt,
-}) => {
+const Post = ({ fullName, content, image, likes, comments, createdAt }) => {
   return (
-    <div className="mt-4 rounded-sm bg-white px-4 pt-4 shadow">
+    <div className="rounded-sm bg-white px-4 pt-4 shadow">
       <div className="flex items-center gap-4">
         <div>
           <Avatar className="!bg-[#246AA3]">
@@ -22,7 +15,7 @@ const Post = ({
         <div>
           <div className="font-bold">{fullName || "Anonymous"}</div>
           <div className="text-sm text-gray-500">
-            {dayjs(createdAt).format("DD/MM/YYYY")}
+            {dayjs(createdAt).format("DD/MM/YYYY HH:mm")}
           </div>
         </div>
       </div>
