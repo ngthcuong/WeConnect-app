@@ -18,9 +18,10 @@ const ProtectedLayout = () => {
     return <p>Loading</p>;
   }
 
-  if (!response?.data?._id) {
-    return <Navigate to={"/login"} />;
-  }
+  // Xử lý tập trung ở rootApi thay vì ở đây
+  // if (!response?.data?._id) {
+  //   return <Navigate to={"/login"} />;
+  // }
 
   return <Outlet />;
 };
