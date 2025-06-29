@@ -16,25 +16,30 @@ const baseQuery = fetchBaseQuery({
 const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
 
-  if (result?.error?.status === 401) {
+  if (
+    result?.error?.status === 401 &&
+    result?.error?.data?.message === "Token has expired."
+  ) {
     const refreshToken = api.getState().auth.refreshToken;
 
     if (refreshToken) {
       const refreshResult = await baseQuery(
         {
           url: "/refresh-token",
-          method: "POST",
           body: { refreshToken },
+          method: "POST",
         },
         api,
         extraOptions,
       );
 
-      if (refreshResult?.data?.accessToken) {
+      const newAccessToken = refreshResult?.data?.accessToken;
+
+      if (newAccessToken) {
         api.dispatch(
           login({
-            accessToken: refreshResult.data.accessToken,
-            refreshToken: refreshResult.data.refreshToken,
+            accessToken: newAccessToken,
+            refreshToken,
           }),
         );
 
