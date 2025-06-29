@@ -1,7 +1,14 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Post from "./Post";
 import { useGetPostsQuery } from "@services/rootApi";
 import Loading from "@components/Loading";
+import { throttle } from "lodash";
 
 const PostList = () => {
   const [posts, setPosts] = useState([]);
@@ -24,22 +31,28 @@ const PostList = () => {
   }, [isSuccess, data]);
 
   // Hàm được gọi khi người dùng cuộn trang
-  const handleScroll = useCallback(() => {
-    if (!hasMore) return;
-    const scrollTop = document.documentElement.scrollTop;
-    const scrollHeight = document.documentElement.scrollHeight;
-    const clientHeight = document.documentElement.clientHeight;
+  const handleScroll = useMemo(() => {
+    return throttle(() => {
+      console.log("scroll");
+      if (!hasMore) return;
+      const scrollTop = document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight;
+      const clientHeight = document.documentElement.clientHeight;
 
-    if (clientHeight + scrollTop + 50 >= scrollHeight && !isFetching) {
-      setOffset(offset + limit);
-    }
-  }, [hasMore, isFetching, offset, limit]);
+      if (clientHeight + scrollTop + 50 >= scrollHeight && !isFetching) {
+        setOffset((offset) => offset + limit);
+      }
+    }, 300);
+  }, [hasMore, isFetching, limit]);
 
   // Đăng ký sự kiện scroll và bỏ đăng ký khi component bị unmount
   // Để tránh lỗi trùng sự kiện khi chuyển trang
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      handleScroll.cancel();
+    };
   }, [handleScroll]);
 
   return isFetching ? (
