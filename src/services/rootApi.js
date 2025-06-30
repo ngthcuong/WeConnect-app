@@ -16,38 +16,40 @@ const baseQuery = fetchBaseQuery({
 const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
 
-  if (
-    result?.error?.status === 401 &&
-    result?.error?.data?.message === "Token has expired."
-  ) {
-    const refreshToken = api.getState().auth.refreshToken;
+  if (result?.error?.status === 401) {
+    if (result?.error?.data?.message === "Token has expired.") {
+      const refreshToken = api.getState().auth.refreshToken;
 
-    if (refreshToken) {
-      const refreshResult = await baseQuery(
-        {
-          url: "/refresh-token",
-          body: { refreshToken },
-          method: "POST",
-        },
-        api,
-        extraOptions,
-      );
-
-      const newAccessToken = refreshResult?.data?.accessToken;
-
-      if (newAccessToken) {
-        api.dispatch(
-          login({
-            accessToken: newAccessToken,
-            refreshToken,
-          }),
+      if (refreshToken) {
+        const refreshResult = await baseQuery(
+          {
+            url: "/refresh-token",
+            body: { refreshToken },
+            method: "POST",
+          },
+          api,
+          extraOptions,
         );
 
-        result = await baseQuery(args, api, extraOptions);
-      } else {
-        api.dispatch(logout());
-        window.location.href = "/login";
+        const newAccessToken = refreshResult?.data?.accessToken;
+
+        if (newAccessToken) {
+          api.dispatch(
+            login({
+              accessToken: newAccessToken,
+              refreshToken,
+            }),
+          );
+
+          result = await baseQuery(args, api, extraOptions);
+        } else {
+          api.dispatch(logout());
+          window.location.href = "/login";
+        }
       }
+    } else {
+      api.dispatch(logout());
+      window.location.href = "/login";
     }
   }
 
@@ -57,7 +59,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 export const rootApi = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Posts", "Users"],
+  tagTypes: ["Posts", "Users", "Pending_Friend_Requests"],
   endpoints: (builder) => {
     return {
       register: builder.mutation({
@@ -148,6 +150,19 @@ export const rootApi = createApi({
           { type: "Users", id: args.friendId },
         ],
       }),
+      getPendingFriendRequests: builder.query({
+        query: () => "/friends/pending",
+        providesTags: (result) =>
+          result
+            ? [
+                ...result.map(({ _id }) => ({
+                  type: "Pending_Friend_Requests",
+                  id: _id,
+                })),
+                { type: "Pending_Friend_Requests", id: "LIST" },
+              ]
+            : [{ type: "Pending_Friend_Requests", id: "LIST" }],
+      }),
     };
   },
 });
@@ -162,4 +177,5 @@ export const {
   useGetPostsQuery,
   useSearchUsersQuery,
   useSendFriendRequestMutation,
+  useGetPendingFriendRequestsQuery,
 } = rootApi;

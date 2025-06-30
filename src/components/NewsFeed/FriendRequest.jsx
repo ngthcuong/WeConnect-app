@@ -1,6 +1,25 @@
 import { Check, Close } from "@mui/icons-material";
 import { Avatar, Button } from "@mui/material";
+import { useGetPendingFriendRequestsQuery } from "@services/rootApi";
 import React from "react";
+
+const mockData = [
+  {
+    _id: "1",
+    fullName: "John Doe",
+    image: "https://i.pravatar.cc/300",
+  },
+  {
+    _id: "2",
+    fullName: "Jane Doe",
+    image: "https://i.pravatar.cc/300",
+  },
+  {
+    _id: "3",
+    fullName: "John Smith",
+    image: "https://i.pravatar.cc/300",
+  },
+];
 
 const FriendRequestItem = ({ userInfo }) => {
   return (
@@ -38,12 +57,15 @@ const FriendRequestItem = ({ userInfo }) => {
 };
 
 const FriendRequest = () => {
+  const { data } = useGetPendingFriendRequestsQuery();
+
   return (
     <div className="rounded-sm bg-white px-3 py-4 shadow">
       <p className="text-lg font-bold">FriendRequest</p>
       <div className="mt-3 flex flex-col gap-4">
-        <FriendRequestItem />
-        <FriendRequestItem />
+        {(data?.slice(0, 3) || mockData)?.map((user) => (
+          <FriendRequestItem key={user._id} userInfo={user} />
+        ))}
       </div>
     </div>
   );

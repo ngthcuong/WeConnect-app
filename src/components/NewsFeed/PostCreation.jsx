@@ -53,7 +53,7 @@ const PostCreation = () => {
     <div className="flex items-center gap-4 rounded-sm bg-white p-5 shadow">
       <div>
         <Avatar className="!bg-[#246AA3]">
-          {userInfo.fullName?.[0].toUpperCase()}
+          {userInfo?.fullName?.[0].toUpperCase()}
         </Avatar>
       </div>
       <div className="flex-1">

@@ -17,7 +17,7 @@ const HomePage = () => {
           <PostCreation />
           <PostList />
         </div>
-        <div className="hidden w-64 sm:block">
+        <div className="hidden w-72 sm:block">
           <FriendRequest />
         </div>
       </div>
