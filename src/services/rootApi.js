@@ -122,7 +122,7 @@ export const rootApi = createApi({
 
       searchUsers: builder.query({
         query: ({ offset, limit, searchQuery }) => {
-          const encodedSearchQuery = encodeURIComponent(searchQuery.trim());
+          const encodedSearchQuery = encodeURIComponent(searchQuery?.trim());
           return {
             url: `/search/users/${encodedSearchQuery}`,
             params: { offset, limit },

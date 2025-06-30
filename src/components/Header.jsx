@@ -85,7 +85,10 @@ const Header = () => {
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     navigate(
-                      `/search/users/${encodeURIComponent(searhQuery.trim())}`,
+                      `/search/users/${encodeURIComponent(searhQuery?.trim())}`,
+                      {
+                        state: { searchQuery: searhQuery?.trim() },
+                      },
                     );
                   }
                 }}
