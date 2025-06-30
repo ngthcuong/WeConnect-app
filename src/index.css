@@ -3,3 +3,9 @@
 body {
   font-family: "Public Sans Variable", sans-serif;
 }
+
+@layer components {
+  .container {
+    @apply !mx-auto !mt-6 !flex !max-w-3xl !gap-4;
+  }
+}
