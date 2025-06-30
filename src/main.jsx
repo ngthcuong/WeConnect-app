@@ -18,6 +18,7 @@ import ProtectedLayout from "@pages/ProtectedLayout";
 import { PersistGate } from "redux-persist/integration/react";
 import { CircularProgress } from "@mui/material";
 import Dialog from "@components/NewsFeed/Dialog";
+import SearchUserPage from "@pages/SearchUserPage";
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
           {
             path: "/",
             element: <HomePage />,
+          },
+          {
+            path: "/search/users/:searchQuery",
+            element: <SearchUserPage />,
           },
         ],
       },

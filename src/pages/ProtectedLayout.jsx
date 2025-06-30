@@ -1,3 +1,4 @@
+import Header from "@components/Header";
 import { saveUserInfo } from "@redux/slices/authSlice";
 import { useGetAuthUserQuery } from "@services/rootApi";
 import React, { useEffect } from "react";
@@ -23,7 +24,14 @@ const ProtectedLayout = () => {
   //   return <Navigate to={"/login"} />;
   // }
 
-  return <Outlet />;
+  return (
+    <div className="h-screen bg-[#F8F7FA]">
+      <Header />
+      <div className="">
+        <Outlet />
+      </div>
+    </div>
+  );
 };
 
 export default ProtectedLayout;

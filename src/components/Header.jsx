@@ -21,10 +21,13 @@ import {
 import { showDrawer } from "@redux/slices/drawerSlice";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [searhQuery, setSearchQuery] = useState("");
 
   const theme = useTheme();
   const isMoble = useMediaQuery(theme.breakpoints.down("sm"));
@@ -77,6 +80,15 @@ const Header = () => {
                 variant="standard"
                 placeholder="Search..."
                 name="search"
+                value={searhQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    navigate(
+                      `/search/users/${encodeURIComponent(searhQuery.trim())}`,
+                    );
+                  }
+                }}
                 slotProps={{
                   input: { className: "h-10 px-3 py-2 " },
                   htmlInput: { className: "!p-0" },

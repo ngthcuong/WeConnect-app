@@ -8,7 +8,7 @@ import React from "react";
 const HomePage = () => {
   return (
     <div className="h-100vh bg-[#F8F7FA]">
-      <Header />
+      {/* <Header /> */}
       <div className="flex gap-4 p-6">
         <div>
           <Sidebar />
