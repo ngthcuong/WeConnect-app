@@ -48,7 +48,6 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
         }
       }
     } else {
-      api.dispatch(logout());
       window.location.href = "/login";
     }
   }
@@ -62,6 +61,7 @@ export const rootApi = createApi({
   tagTypes: ["Posts", "Users", "Pending_Friend_Requests"],
   endpoints: (builder) => {
     return {
+      // Auth
       register: builder.mutation({
         query: ({ fullName, email, password }) => {
           return {
@@ -101,6 +101,8 @@ export const rootApi = createApi({
       getAuthUser: builder.query({
         query: () => "/auth-user",
       }),
+
+      // Posts
       createPost: builder.mutation({
         query: (formData) => {
           return {
@@ -122,6 +124,7 @@ export const rootApi = createApi({
         providesTags: [{ type: "Posts" }],
       }),
 
+      // Users / Friends
       searchUsers: builder.query({
         query: ({ offset, limit, searchQuery }) => {
           const encodedSearchQuery = encodeURIComponent(searchQuery?.trim());
@@ -163,6 +166,30 @@ export const rootApi = createApi({
               ]
             : [{ type: "Pending_Friend_Requests", id: "LIST" }],
       }),
+      acceptFriendRequest: builder.mutation({
+        query: ({ friendId }) => {
+          return {
+            url: `/friends/accept`,
+            body: { friendId },
+            method: "POST",
+          };
+        },
+        invalidatesTags: (result, error, args) => [
+          { type: "Pending_Friend_Requests", id: args.friendId },
+        ],
+      }),
+      cancelFrientRequest: builder.mutation({
+        query: ({ friendId }) => {
+          return {
+            url: `/friends/cancel`,
+            body: { friendId },
+            method: "POST",
+          };
+        },
+        invalidatesTags: (result, error, args) => [
+          { type: "Pending_Friend_Requests", id: args.friendId },
+        ],
+      }),
     };
   },
 });
@@ -178,4 +205,6 @@ export const {
   useSearchUsersQuery,
   useSendFriendRequestMutation,
   useGetPendingFriendRequestsQuery,
+  useAcceptFriendRequestMutation,
+  useCancelFrientRequestMutation,
 } = rootApi;

@@ -1,3 +1,4 @@
+import { socket } from "@context/SocketProvider";
 import { Check, Close, Message, PersonAddAlt1 } from "@mui/icons-material";
 import { Avatar, Button, CircularProgress } from "@mui/material";
 import { useSendFriendRequestMutation } from "@services/rootApi";
@@ -6,6 +7,12 @@ import { Link } from "react-router-dom";
 
 const UserCard = ({ userInfo }) => {
   const [sendFriendRequest, { isLoading }] = useSendFriendRequestMutation();
+
+  const handleSendFriendRequest = async () => {
+    await sendFriendRequest({ friendId: userInfo._id }).unwrap();
+    socket.emit("friendRequestSent", { receiverId: userInfo._id });
+  };
+
   const getActionButtons = () => {
     if (userInfo?.isFriend) {
       return (
@@ -65,7 +72,7 @@ const UserCard = ({ userInfo }) => {
         startIcon={<PersonAddAlt1 />}
         style={{ textTransform: "none" }}
         size="small"
-        onClick={() => sendFriendRequest({ friendId: userInfo._id })}
+        onClick={handleSendFriendRequest}
       >
         Add Friend
       </Button>

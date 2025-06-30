@@ -1,7 +1,12 @@
+import { socket } from "@context/SocketProvider";
 import { Check, Close } from "@mui/icons-material";
-import { Avatar, Button } from "@mui/material";
-import { useGetPendingFriendRequestsQuery } from "@services/rootApi";
-import React from "react";
+import { Avatar, Button, CircularProgress } from "@mui/material";
+import {
+  useAcceptFriendRequestMutation,
+  useCancelFrientRequestMutation,
+  useGetPendingFriendRequestsQuery,
+} from "@services/rootApi";
+import React, { useEffect } from "react";
 
 const mockData = [
   {
@@ -22,6 +27,11 @@ const mockData = [
 ];
 
 const FriendRequestItem = ({ userInfo }) => {
+  const [acceptFriendRequest, { isLoading: isAccepting }] =
+    useAcceptFriendRequestMutation();
+  const [cancelFriendRequest, { isLoading: isCancelling }] =
+    useCancelFrientRequestMutation();
+
   return (
     <div className="flex items-center gap-4">
       <div className="flex">
@@ -33,23 +43,33 @@ const FriendRequestItem = ({ userInfo }) => {
         </p>
         <p className="text-sm text-gray-500">12 mutal friends</p>
         <div className="mt-2 flex gap-2">
-          <Button
-            variant="contained"
-            startIcon={<Check />}
-            style={{ textTransform: "none" }}
-            size="small"
-          >
-            Accept
-          </Button>
-          <Button
-            variant="outlined"
-            startIcon={<Close />}
-            style={{ textTransform: "none" }}
-            size="small"
-            color="error"
-          >
-            Cancel
-          </Button>
+          {isAccepting ? (
+            <CircularProgress size={24} />
+          ) : (
+            <Button
+              variant="contained"
+              startIcon={<Check />}
+              style={{ textTransform: "none" }}
+              size="small"
+              onClick={() => acceptFriendRequest({ friendId: userInfo._id })}
+            >
+              Accept
+            </Button>
+          )}
+          {isCancelling ? (
+            <CircularProgress size={24} />
+          ) : (
+            <Button
+              variant="outlined"
+              startIcon={<Close />}
+              style={{ textTransform: "none" }}
+              size="small"
+              color="error"
+              onClick={() => cancelFriendRequest({ friendId: userInfo._id })}
+            >
+              Cancel
+            </Button>
+          )}
         </div>
       </div>
     </div>
@@ -57,7 +77,17 @@ const FriendRequestItem = ({ userInfo }) => {
 };
 
 const FriendRequest = () => {
-  const { data } = useGetPendingFriendRequestsQuery();
+  const { data, refetch } = useGetPendingFriendRequestsQuery();
+
+  useEffect(() => {
+    socket.on("friendRequestReceived", (data) => {
+      if (data.from) refetch();
+    });
+
+    return () => {
+      socket.off("friendRequestReceived");
+    };
+  });
 
   return (
     <div className="rounded-sm bg-white px-3 py-4 shadow">
