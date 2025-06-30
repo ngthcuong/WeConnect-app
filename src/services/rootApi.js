@@ -57,6 +57,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 export const rootApi = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithReauth,
+  tagTypes: ["Posts", "Users"],
   endpoints: (builder) => {
     return {
       register: builder.mutation({
@@ -106,7 +107,7 @@ export const rootApi = createApi({
             method: "POST",
           };
         },
-        invalidatesTags: ["Posts"],
+        invalidatesTags: [{ type: "Posts" }],
       }),
       getPosts: builder.query({
         query: ({ offset, limit } = {}) => {
@@ -116,7 +117,24 @@ export const rootApi = createApi({
             // method: "GET",
           };
         },
-        providesTags: ["Posts"],
+        providesTags: [{ type: "Posts" }],
+      }),
+
+      searchUsers: builder.query({
+        query: ({ offset, limit, searchQuery }) => {
+          const encodedSearchQuery = encodeURIComponent(searchQuery.trim());
+          return {
+            url: `/search/users/${encodedSearchQuery}`,
+            params: { offset, limit },
+          };
+        },
+        providesTags: (result) =>
+          result
+            ? [
+                ...result.users.map(({ _id }) => ({ type: "Users", id: _id })),
+                { type: "Users", id: "LIST" },
+              ]
+            : [{ type: "Users", id: "LIST" }],
       }),
     };
   },
@@ -130,4 +148,5 @@ export const {
   useGetAuthUserQuery,
   useCreatePostMutation,
   useGetPostsQuery,
+  useSearchUsersQuery,
 } = rootApi;

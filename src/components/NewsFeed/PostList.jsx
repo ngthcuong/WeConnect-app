@@ -6,9 +6,11 @@ import { useLazyLoadPosts } from "@hooks/index";
 const PostList = () => {
   const { hasMore, isFetching, posts } = useLazyLoadPosts();
 
-  return isFetching ? (
-    <Loading />
-  ) : (
+  if (isFetching) {
+    return <Loading />;
+  }
+
+  return (
     <div className="flex flex-col gap-4">
       {(posts || []).map((post) => (
         <Post
@@ -21,9 +23,7 @@ const PostList = () => {
           createdAt={post.createdAt}
         />
       ))}
-      {isFetching && <Loading />}
       {!hasMore && <div className="text-center">No more posts</div>}
-      {/* Hiển thị thông báo kết thúc trang */}
     </div>
   );
 };
