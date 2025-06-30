@@ -7,15 +7,15 @@ import { useLocation } from "react-router-dom";
 const SearchUserPage = () => {
   const location = useLocation();
 
-  const { data, isFetching, isLoading } = useSearchUsersQuery({
+  const { data } = useSearchUsersQuery({
     offset: 0,
     limit: 10,
     searchQuery: location?.state?.searchQuery?.trim(),
   });
 
-  if (isLoading || isFetching) {
-    return <Loading />;
-  }
+  // if (isLoading || isFetching) {
+  //   return <Loading />;
+  // }
 
   return (
     <div className="container flex-col">

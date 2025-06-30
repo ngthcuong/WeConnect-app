@@ -1,12 +1,11 @@
 import { Check, Close, Message, PersonAddAlt1 } from "@mui/icons-material";
-import { Avatar, Button } from "@mui/material";
+import { Avatar, Button, CircularProgress } from "@mui/material";
 import { useSendFriendRequestMutation } from "@services/rootApi";
 import React from "react";
 import { Link } from "react-router-dom";
 
 const UserCard = ({ userInfo }) => {
-  console.log(userInfo);
-
+  const [sendFriendRequest, { isLoading }] = useSendFriendRequestMutation();
   const getActionButtons = () => {
     if (userInfo?.isFriend) {
       return (
@@ -58,7 +57,9 @@ const UserCard = ({ userInfo }) => {
       );
     }
 
-    return (
+    return isLoading ? (
+      <CircularProgress size={24} />
+    ) : (
       <Button
         variant="outlined"
         startIcon={<PersonAddAlt1 />}
@@ -70,8 +71,6 @@ const UserCard = ({ userInfo }) => {
       </Button>
     );
   };
-
-  const [sendFriendRequest] = useSendFriendRequestMutation();
 
   return (
     <div className="flex flex-col items-center gap-2 rounded-sm bg-white p-4 shadow-sm">
