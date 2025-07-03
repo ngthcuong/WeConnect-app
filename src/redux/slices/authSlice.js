@@ -18,7 +18,7 @@ export const authSlice = createSlice({
       return initialState;
     },
     saveUserInfo: (state, action) => {
-      state.user = action.payload.user;
+      state.user = action.payload;
     },
   },
 });

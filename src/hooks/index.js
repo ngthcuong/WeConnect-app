@@ -29,18 +29,32 @@ export const useLazyLoadPosts = () => {
     setOffset((offset) => offset + limit);
   }, []);
 
-  useInfiniteScroll(loadMore, hasMore, isFetching, 300, 50);
+  useInfiniteScroll({
+    loadMore,
+    hasMore,
+    isFetching,
+    time: 300,
+    distance: 50,
+    restFn: () => {
+      setOffset(0);
+      setHasMore(true);
+      prevDataRef.current = null;
+    },
+    offset,
+  });
 
   return { hasMore, loadMore, isFetching, posts };
 };
 
-export const useInfiniteScroll = (
+export const useInfiniteScroll = ({
   loadMore,
   hasMore,
   isFetching,
+  offset,
+  restFn,
   time,
   distance,
-) => {
+}) => {
   const handleScroll = useMemo(() => {
     return throttle(() => {
       if (!hasMore) return;
@@ -48,11 +62,15 @@ export const useInfiniteScroll = (
       const scrollHeight = document.documentElement.scrollHeight;
       const clientHeight = document.documentElement.clientHeight;
 
+      if (scrollTop === 0 && offset > 0) {
+        restFn();
+        return;
+      }
       if (clientHeight + scrollTop + distance >= scrollHeight && !isFetching) {
         loadMore();
       }
     }, time);
-  }, [hasMore, isFetching, loadMore, time, distance]);
+  }, [hasMore, isFetching, loadMore, time, distance, offset, restFn]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
