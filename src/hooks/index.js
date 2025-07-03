@@ -18,9 +18,12 @@ export const useLazyLoadPosts = () => {
         return;
       }
       prevDataRef.current = data;
-      setPosts((prevPosts) => [...prevPosts, ...data]);
+      setPosts((prevPosts) => {
+        if (offset === 0) return data;
+        return [...prevPosts, ...data];
+      });
     }
-  }, [isSuccess, data]);
+  }, [isSuccess, data, offset]);
 
   const loadMore = useCallback(() => {
     setOffset((offset) => offset + limit);

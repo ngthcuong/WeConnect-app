@@ -111,7 +111,58 @@ export const rootApi = createApi({
             method: "POST",
           };
         },
-        invalidatesTags: [{ type: "Posts" }],
+        onQueryStarted: async (
+          args,
+          { dispatch, queryFulfilled, getState },
+        ) => {
+          const store = getState();
+          const tempId = crypto.randomUUID();
+
+          const newPost = {
+            _id: tempId,
+            likes: [],
+            comments: [],
+            content: args.get("content"),
+            author: {
+              notifications: [],
+              _id: store.auth?.user?._id,
+              fullName: store.auth?.user?.fullName,
+            },
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            __v: 0,
+          };
+
+          const patchResult = dispatch(
+            rootApi.util.updateQueryData(
+              "getPosts",
+              { offset: 0, limit: 10 },
+              (draft) => {
+                draft.unshift(newPost);
+              },
+            ),
+          );
+
+          try {
+            const { data } = await queryFulfilled;
+            dispatch(
+              rootApi.util.updateQueryData(
+                "getPosts",
+                { offset: 0, limit: 10 },
+                (draft) => {
+                  const index = draft.findIndex((post) => post._id === tempId);
+                  if (index) {
+                    draft[index] = data;
+                  }
+                },
+              ),
+            );
+          } catch (err) {
+            patchResult.undo();
+            console.log(err);
+          }
+        },
+        // invalidatesTags: [{ type: "Posts" }],
       }),
       getPosts: builder.query({
         query: ({ offset, limit } = {}) => {
