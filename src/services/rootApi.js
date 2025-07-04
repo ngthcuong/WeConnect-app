@@ -59,6 +59,9 @@ export const rootApi = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithReauth,
   tagTypes: ["Posts", "Users", "Pending_Friend_Requests"],
+  // keepUnusedDataFor: 20, // instead of 60 seconds (default)
+  // refetchOnMountOrArgChange: true,
+  refetchOnFocus: true, // need config a func in store.js
   endpoints: (builder) => {
     return {
       // Auth
@@ -206,6 +209,7 @@ export const rootApi = createApi({
       }),
       getPendingFriendRequests: builder.query({
         query: () => "/friends/pending",
+        // keepUnusedDataFor: 20,
         providesTags: (result) =>
           result
             ? [
