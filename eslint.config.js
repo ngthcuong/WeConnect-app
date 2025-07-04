@@ -29,22 +29,25 @@ export default [
         "warn",
         { allowConstantExport: true },
       ],
+      "react-hooks/exhaustive-deps": "warn",
     },
   },
   {
-    // update this to match your test files
+    // Cấu hình cho Jest
     files: ["**/*.spec.js", "**/*.test.js"],
-    ...jest.configs["flat/recommended"],
-    // plugins: { jest: pluginJest },
-    // languageOptions: {
-    //   globals: pluginJest.environments.globals.globals,
-    // },
-    // rules: {
-    //   "jest/no-disabled-tests": "warn",
-    //   "jest/no-focused-tests": "error",
-    //   "jest/no-identical-title": "error",
-    //   "jest/prefer-to-have-length": "warn",
-    //   "jest/valid-expect": "error",
-    // },
+    plugins: { jest: pluginJest },
+    languageOptions: {
+      globals: {
+        ...pluginJest.environments.globals.globals,
+      },
+    },
+    rules: {
+      ...pluginJest.configs.recommended.rules,
+      "jest/no-disabled-tests": "warn",
+      "jest/no-focused-tests": "error",
+      "jest/no-identical-title": "error",
+      "jest/prefer-to-have-length": "warn",
+      "jest/valid-expect": "error",
+    },
   },
 ];
