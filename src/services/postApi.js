@@ -83,6 +83,65 @@ export const postApi = rootApi.injectEndpoints({
             method: "POST",
           };
         },
+        onQueryStarted: async (
+          args,
+          { dispatch, queryFulfilled, getState },
+        ) => {
+          const store = getState();
+          const tempId = crypto.randomUUID();
+
+          // Optimistic Update
+          const patchResult = dispatch(
+            rootApi.util.updateQueryData(
+              "getPosts",
+              { offset: 0, limit: 10 },
+              (draft) => {
+                const currentPost = draft.find((p) => p._id === args);
+                if (currentPost) {
+                  currentPost.likes.push({
+                    author: {
+                      _id: store.auth.user._id,
+                      fullName: store.auth.user.fullName,
+                    },
+                    _id: tempId,
+                  });
+                }
+              },
+            ),
+          );
+
+          try {
+            const { data } = await queryFulfilled;
+            dispatch(
+              rootApi.util.updateQueryData(
+                "getPosts",
+                { offset: 0, limit: 10 },
+                (draft) => {
+                  const currentPost = draft.find((p) => p._id === args);
+
+                  if (currentPost) {
+                    let currentLike = currentPost.likes.find(
+                      (like) => like._id === tempId,
+                    );
+                    if (currentLike) {
+                      currentLike = {
+                        author: {
+                          _id: store.auth.user._id,
+                          fullName: store.auth.user.fullName,
+                        },
+                        _id: tempId,
+                        createdAt: data.createdAt,
+                        updatedAt: data.updatedAt,
+                      };
+                    }
+                  }
+                },
+              ),
+            );
+          } catch (error) {
+            patchResult.undo();
+          }
+        },
       }),
       unlikePost: builder.mutation({
         query: (postId) => {
