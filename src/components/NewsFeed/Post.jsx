@@ -11,6 +11,7 @@ const Post = ({
   likes,
   comments,
   createdAt,
+  isLiked = false,
   onLike = () => {},
 }) => {
   return (
@@ -34,15 +35,20 @@ const Post = ({
 
       <div className="mt-3 flex justify-between gap-4">
         <div className="flex items-center gap-1">
-          <ThumbUp className="!text-[#246AA3]" /> {likes?.length || 0}
+          <ThumbUp className={isLiked ? "!text-[#246AA3]" : "!text-gray-500"} />{" "}
+          {likes?.length || 0}
         </div>
         <div>{comments?.length || 0} comments</div>
       </div>
 
       <div className="mt-2 flex items-center justify-around gap-4 border-t-1 border-gray-200 pt-1">
         <Button
-          startIcon={<ThumbUp className="!text-[#246AA3]" />}
-          className="!text-gray-500"
+          startIcon={
+            <ThumbUp
+              className={isLiked ? "!text-[#246AA3]" : "!text-gray-500"}
+            />
+          }
+          className={isLiked ? "!text-[#246AA3]" : "!text-gray-500"}
           style={{ textTransform: "none" }}
           onClick={() => onLike(id)}
         >

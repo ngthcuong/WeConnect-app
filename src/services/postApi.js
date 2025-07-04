@@ -1,5 +1,13 @@
 import { method } from "lodash";
 import { rootApi } from "./rootApi";
+import { createEntityAdapter } from "@reduxjs/toolkit";
+
+export const postsAdapter = createEntityAdapter({
+  selectId: (post) => post._id,
+  sortComparer: (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt),
+});
+
+const initialState = postsAdapter.getInitialState();
 
 export const postApi = rootApi.injectEndpoints({
   endpoints: (builder) => {
@@ -72,6 +80,19 @@ export const postApi = rootApi.injectEndpoints({
             params: { offset, limit },
             // method: "GET",
           };
+        },
+        transformResponse: (response) => {
+          // Chuẩn hóa thành dạng
+          //  {
+          //   ids: [1, 3], entities: [{id: 1, content: '123'},{id: 3, content: 'abc'}]
+          //  }
+          return postsAdapter.upsertMany(initialState, response);
+        },
+        serializeQueryArgs: () => "allPosts", // Đảm bảo luôn trả về một key duy nhất
+        merge: (currentCatch, newItems) => {
+          // gộp dữ liệu trước đó với dữ liệu mới có được
+          // đảm bảo dữ liệu sẽ không bị duplicate vì đã có ids
+          return postsAdapter.upsertMany(currentCatch, newItems.entities);
         },
         providesTags: [{ type: "Posts" }],
       }),

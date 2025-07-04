@@ -2,11 +2,13 @@ import Post from "./Post";
 import Loading from "@components/Loading";
 
 import { useLazyLoadPosts } from "@hooks/index";
+import { useGetAuthUserQuery } from "@services/authApi";
 import { useLikePostMutation } from "@services/postApi";
 
 const PostList = () => {
   const { hasMore, isFetching, posts } = useLazyLoadPosts();
   const [likePost, { isLoading }] = useLikePostMutation();
+  const { data } = useGetAuthUserQuery();
 
   if (isFetching) {
     return <Loading />;
@@ -24,6 +26,7 @@ const PostList = () => {
           likes={post.likes}
           comments={post.comments}
           createdAt={post.createdAt}
+          isLiked={post.likes.some((like) => like.author?._id === data._id)}
           onLike={() => {
             likePost(post._id);
           }}
