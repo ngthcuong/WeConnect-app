@@ -2,7 +2,7 @@ import FormField from "@components/FormField";
 import TextInput from "@components/FormInputs/TextInput";
 import { Alert, Button, CircularProgress } from "@mui/material";
 import { showSnackbar } from "@redux/slices/snackBarSlice";
-import { useRegisterMutation } from "@services/rootApi";
+import { useRegisterMutation } from "@services/authApi";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";

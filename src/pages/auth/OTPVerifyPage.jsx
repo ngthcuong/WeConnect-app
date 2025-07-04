@@ -4,7 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, CircularProgress } from "@mui/material";
 import { login } from "@redux/slices/authSlice";
 import { showSnackbar } from "@redux/slices/snackBarSlice";
-import { useVerifyOTPMutation } from "@services/rootApi";
+import { useVerifyOTPMutation } from "@services/authApi";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";

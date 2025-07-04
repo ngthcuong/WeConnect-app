@@ -1,4 +1,4 @@
-import { useGetPostsQuery } from "@services/rootApi";
+import { useGetPostsQuery } from "@services/postApi";
 import { throttle } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 

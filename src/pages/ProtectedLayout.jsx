@@ -1,7 +1,7 @@
 import Header from "@components/Header";
 import SocketProvider from "@context/SocketProvider";
 import { saveUserInfo } from "@redux/slices/authSlice";
-import { useGetAuthUserQuery } from "@services/rootApi";
+import { useGetAuthUserQuery } from "@services/authApi";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";

@@ -1,6 +1,6 @@
 import Loading from "@components/Loading";
 import UserCard from "@components/UserCard";
-import { useSearchUsersQuery } from "@services/rootApi";
+import { useSearchUsersQuery } from "@services/friendApi";
 import React from "react";
 import { useLocation } from "react-router-dom";
 

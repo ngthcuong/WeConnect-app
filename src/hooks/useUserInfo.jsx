@@ -1,4 +1,4 @@
-import { useGetAuthUserQuery } from "@services/rootApi";
+import { useGetAuthUserQuery } from "@services/authApi";
 
 export const useUserInfo = () => {
   const response = useGetAuthUserQuery();

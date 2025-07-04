@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import { hideDialog } from "@redux/slices/dialogSlice";
 import { showSnackbar } from "@redux/slices/snackBarSlice";
-import { useCreatePostMutation } from "@services/rootApi";
+import { useCreatePostMutation } from "@services/postApi";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 

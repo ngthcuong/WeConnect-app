@@ -5,7 +5,7 @@ import {
   useAcceptFriendRequestMutation,
   useCancelFrientRequestMutation,
   useGetPendingFriendRequestsQuery,
-} from "@services/rootApi";
+} from "@services/friendApi";
 import React, { useEffect } from "react";
 
 const mockData = [

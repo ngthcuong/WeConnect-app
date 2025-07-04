@@ -1,7 +1,7 @@
 import FormField from "@components/FormField";
 import TextInput from "@components/FormInputs/TextInput";
 import { Alert, Button, CircularProgress } from "@mui/material";
-import { useLoginMutation } from "@services/rootApi";
+import { useLoginMutation } from "@services/authApi";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
