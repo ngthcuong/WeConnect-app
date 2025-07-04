@@ -1,3 +1,4 @@
+import { method } from "lodash";
 import { rootApi } from "./rootApi";
 
 export const postApi = rootApi.injectEndpoints({
@@ -74,8 +75,31 @@ export const postApi = rootApi.injectEndpoints({
         },
         providesTags: [{ type: "Posts" }],
       }),
+      likePost: builder.mutation({
+        query: (postId) => {
+          return {
+            url: `/posts/${postId}/like`,
+            body: { postId },
+            method: "POST",
+          };
+        },
+      }),
+      unlikePost: builder.mutation({
+        query: (postId) => {
+          return {
+            url: `/posts/${postId}/like`,
+            body: { postId },
+            method: "DELETE",
+          };
+        },
+      }),
     };
   },
 });
 
-export const { useCreatePostMutation, useGetPostsQuery } = postApi;
+export const {
+  useCreatePostMutation,
+  useGetPostsQuery,
+  useLikePostMutation,
+  useUnlikePostMutation,
+} = postApi;

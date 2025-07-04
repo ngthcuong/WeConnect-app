@@ -3,7 +3,16 @@ import { Avatar, Button } from "@mui/material";
 import dayjs from "dayjs";
 import React from "react";
 
-const Post = ({ fullName, content, image, likes, comments, createdAt }) => {
+const Post = ({
+  id,
+  fullName,
+  content,
+  image,
+  likes,
+  comments,
+  createdAt,
+  onLike = () => {},
+}) => {
   return (
     <div className="rounded-sm bg-white px-4 pt-4 shadow">
       <div className="flex items-center gap-4">
@@ -34,12 +43,15 @@ const Post = ({ fullName, content, image, likes, comments, createdAt }) => {
         <Button
           startIcon={<ThumbUp className="!text-[#246AA3]" />}
           className="!text-gray-500"
+          style={{ textTransform: "none" }}
+          onClick={() => onLike(id)}
         >
           Like
         </Button>
         <Button
           startIcon={<Comment className="!text-gray-500" />}
           className="!text-gray-500"
+          style={{ textTransform: "none" }}
         >
           Comment
         </Button>
