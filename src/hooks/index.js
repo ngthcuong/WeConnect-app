@@ -3,35 +3,23 @@ import { throttle } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 export const useLazyLoadPosts = () => {
-  // const [posts, setPosts] = useState([]);
   const prevCountPostRef = useRef(0);
   const [hasMore, setHasMore] = useState(true);
-
   const [offset, setOffset] = useState(0);
   const limit = 10;
+
   const {
     data = {},
     isFetching,
     isSuccess,
     refetch,
-  } = useGetPostsQuery({ offset, limit }, { skip: !hasMore });
+  } = useGetPostsQuery({ offset, limit });
 
   const posts = (data.ids || []).map((id) => data.entities[id]);
 
   useEffect(() => {
-    // if (isSuccess && data && data !== prevDataRef.current) {
-    //   if (!data.length) {
-    //     setHasMore(false);
-    //     return;
-    //   }
-    //   prevDataRef.current = data;
-    //   setPosts((prevPosts) => {
-    //     if (offset === 0) return data;
-    //     return [...prevPosts, ...data];
-    //   });
-    // }
     if (!isFetching && data && hasMore) {
-      const currentPostCount = data.ids.length;
+      const currentPostCount = data.ids?.length || 0;
       const newFetchedCount = currentPostCount - prevCountPostRef.current;
       if (newFetchedCount === 0) {
         setHasMore(false);
@@ -46,21 +34,17 @@ export const useLazyLoadPosts = () => {
   }, []);
 
   useEffect(() => {
-    refetch();
-  }, [offset]);
+    if (refetch) {
+      refetch();
+    }
+  }, [offset, refetch]);
 
   useInfiniteScroll({
     loadMore,
     hasMore,
     isFetching,
     time: 300,
-    distance: 50,
-    // restFn: () => {
-    //   setOffset(0);
-    //   setHasMore(true);
-    //   prevDataRef.current = null;
-    // },
-    // offset,
+    distance: 100,
   });
 
   return { hasMore, loadMore, isFetching, posts };

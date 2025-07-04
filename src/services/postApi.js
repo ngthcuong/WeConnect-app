@@ -43,28 +43,23 @@ export const postApi = rootApi.injectEndpoints({
           };
 
           const patchResult = dispatch(
-            rootApi.util.updateQueryData(
-              "getPosts",
-              { offset: 0, limit: 10 },
-              (draft) => {
-                draft.unshift(newPost);
-              },
-            ),
+            rootApi.util.updateQueryData("getPosts", "allPosts", (draft) => {
+              // draft.unshift(newPost);
+              postsAdapter.addOne(draft, newPost);
+            }),
           );
 
           try {
             const { data } = await queryFulfilled;
             dispatch(
-              rootApi.util.updateQueryData(
-                "getPosts",
-                { offset: 0, limit: 10 },
-                (draft) => {
-                  const index = draft.findIndex((post) => post._id === tempId);
-                  if (index) {
-                    draft[index] = data;
-                  }
-                },
-              ),
+              rootApi.util.updateQueryData("getPosts", "allPosts", (draft) => {
+                // const index = draft.findIndex((post) => post._id === tempId);
+                // if (index) {
+                //   draft[index] = data;
+                // }
+                postsAdapter.removeOne(draft, tempId);
+                postsAdapter.addOne(draft, data);
+              }),
             );
           } catch (err) {
             patchResult.undo();
@@ -113,54 +108,47 @@ export const postApi = rootApi.injectEndpoints({
 
           // Optimistic Update
           const patchResult = dispatch(
-            rootApi.util.updateQueryData(
-              "getPosts",
-              { offset: 0, limit: 10 },
-              (draft) => {
-                const currentPost = draft.find((p) => p._id === args);
-                if (currentPost) {
-                  currentPost.likes.push({
-                    author: {
-                      _id: store.auth.user._id,
-                      fullName: store.auth.user.fullName,
-                    },
-                    _id: tempId,
-                  });
-                }
-              },
-            ),
+            rootApi.util.updateQueryData("getPosts", "allPosts", (draft) => {
+              const currentPost = draft.entities[args];
+              if (currentPost) {
+                currentPost.likes.push({
+                  author: {
+                    _id: store.auth.user._id,
+                    fullName: store.auth.user.fullName,
+                  },
+                  _id: tempId,
+                });
+              }
+            }),
           );
 
           try {
             const { data } = await queryFulfilled;
-            dispatch(
-              rootApi.util.updateQueryData(
-                "getPosts",
-                { offset: 0, limit: 10 },
-                (draft) => {
-                  const currentPost = draft.find((p) => p._id === args);
 
-                  if (currentPost) {
-                    let currentLike = currentPost.likes.find(
-                      (like) => like._id === tempId,
-                    );
-                    if (currentLike) {
-                      currentLike = {
-                        author: {
-                          _id: store.auth.user._id,
-                          fullName: store.auth.user.fullName,
-                        },
-                        _id: tempId,
-                        createdAt: data.createdAt,
-                        updatedAt: data.updatedAt,
-                      };
-                    }
+            dispatch(
+              rootApi.util.updateQueryData("getPosts", "allPosts", (draft) => {
+                const currentPost = draft.entities[args];
+                if (currentPost) {
+                  const likeIndex = currentPost.likes.findIndex(
+                    (like) => like._id === tempId,
+                  );
+                  if (likeIndex !== -1) {
+                    currentPost.likes[likeIndex] = {
+                      author: {
+                        _id: store.auth.user._id,
+                        fullName: store.auth.user.fullName,
+                      },
+                      createdAt: data.createdAt,
+                      updatedAt: data.updatedAt,
+                      _id: data._id,
+                    };
                   }
-                },
-              ),
+                }
+              }),
             );
           } catch (error) {
             patchResult.undo();
+            console.log(error);
           }
         },
       }),
