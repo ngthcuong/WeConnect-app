@@ -1,35 +1,56 @@
-import { useCreateCommentMutation, useGetPostsQuery } from "@services/postApi";
+import {
+  useCreateCommentMutation,
+  useGetPostsByAuthorIdQuery,
+  useGetPostsQuery,
+} from "@services/postApi";
 import { throttle } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useUserInfo } from "./useUserInfo";
 import { socket } from "@context/SocketProvider";
 import { Events } from "@libs/constants";
 
-export const useLazyLoadPosts = () => {
+export const useLazyLoadPosts = ({ userId }) => {
   const prevCountPostRef = useRef(0);
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
   const limit = 10;
 
   const {
-    data = {},
-    isFetching,
-    refetch,
-  } = useGetPostsQuery({ offset, limit });
+    data: userProfileData = { ids: [], entities: [] },
+    isFetching: userProfileFetching,
+    refetch: userProfileRefetch,
+  } = useGetPostsByAuthorIdQuery({ offset, limit, userId }, { skip: !userId });
+
+  const {
+    data: homeData = { ids: [], entities: [] },
+    isFetching: homeIsFetching,
+    refetch: homeRefetch,
+  } = useGetPostsQuery({ offset, limit }, { skip: !!userId });
+
+  const data = userId ? userProfileData : homeData;
+  const isFetching = userId ? userProfileFetching : homeIsFetching;
+  const refetch = userId ? userProfileRefetch : homeRefetch;
 
   const posts = (data.ids || []).map((id) => data.entities[id]);
+  console.log(data);
 
   useEffect(() => {
     if (!isFetching && data && hasMore) {
-      const currentPostCount = data.ids?.length || 0;
-      const newFetchedCount = currentPostCount - prevCountPostRef.current;
-      if (newFetchedCount === 0) {
-        setHasMore(false);
+      if (userId) {
+        if (data.ids.length === data.meta.total) {
+          setHasMore(false);
+        }
       } else {
-        prevCountPostRef.current = currentPostCount;
+        const currentPostCount = data.ids?.length || 0;
+        const newFetchedCount = currentPostCount - prevCountPostRef.current;
+        if (newFetchedCount === 0) {
+          setHasMore(false);
+        } else {
+          prevCountPostRef.current = currentPostCount;
+        }
       }
     }
-  }, [isFetching, data, hasMore]);
+  }, [isFetching, data, hasMore, userId]);
 
   const loadMore = useCallback(() => {
     setOffset((offset) => offset + limit);

@@ -11,24 +11,20 @@ import {
 } from "@services/postApi";
 
 const UserPosts = ({ userId }) => {
-  // const { hasMore, isFetching, posts } = useLazyLoadPosts();
+  const { isFetching, posts } = useLazyLoadPosts({ userId });
   const [likePost] = useLikePostMutation();
   const [commentPost] = useCreateCommentMutation();
-  const { data = {}, isFetching } = useGetPostsByAuthorIdQuery({
-    offset: 0,
-    limit: 10,
-    authorId: userId,
-  });
+  // const { data = {}, isFetching } = useGetPostsByAuthorIdQuery({
+  //   offset: 0,
+  //   limit: 10,
+  //   userId,
+  // });
   const { _id } = useUserInfo();
   const { createNotification } = useNotification();
 
-  if (isFetching) {
-    return <Loading />;
-  }
-
   return (
     <div className="flex flex-col gap-4">
-      {(data.posts || []).map((post) => (
+      {(posts || []).map((post) => (
         <Post
           key={post._id}
           id={post._id}
@@ -71,6 +67,7 @@ const UserPosts = ({ userId }) => {
           }}
         />
       ))}
+      {isFetching && <Loading />}
       {/* {!hasMore && <div className="text-center">No more posts</div>} */}
     </div>
   );

@@ -219,18 +219,36 @@ export const postApi = rootApi.injectEndpoints({
         },
       }),
       getPostsByAuthorId: builder.query({
-        query: ({ offset, limit, authorId } = {}) => {
+        query: ({ offset, limit, userId } = {}) => {
           return {
-            url: `/posts/author/${authorId}`,
+            url: `/posts/author/${userId}`,
             params: { offset, limit },
             // method: "GET",
           };
         },
+        transformResponse: (response) => {
+          const postNormalize = postsAdapter.upsertMany(
+            initialState,
+            response.posts,
+          );
+          return {
+            ...postNormalize,
+            meta: {
+              total: response.total,
+              limit: response.limit,
+              offset: response.offset,
+            },
+          };
+        },
+        serializeQueryArgs: () => "userPosts",
+        merge: (currentCatch, newItems) => {
+          return postsAdapter.upsertMany(currentCatch, newItems.entities);
+        },
       }),
       getPostImagesByAuthorId: builder.query({
-        query: ({ offset, limit, authorId } = {}) => {
+        query: ({ offset, limit, userId } = {}) => {
           return {
-            url: `/posts/author/${authorId}/images`,
+            url: `/posts/author/${userId}/images`,
             params: { offset, limit },
           };
         },
