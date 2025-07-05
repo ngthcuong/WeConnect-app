@@ -8,6 +8,7 @@ import { useUserInfo } from "@hooks/useUserInfo";
 import PostCreation from "@components/NewsFeed/PostCreation";
 import PostList from "@components/NewsFeed/PostList";
 import { useGetUserInfoByIdQuery } from "@services/userApi";
+import UserPosts from "@components/UserProfile/UserPosts";
 
 const UserProfile = () => {
   const { userId } = useParams();
@@ -215,7 +216,7 @@ const UserProfile = () => {
             <div className="lg:col-span-2">
               <div className="space-y-6">
                 {userId === _id && <PostCreation />}
-                <PostList />
+                <UserPosts userId={userId} />
               </div>
             </div>
           </div>

@@ -218,6 +218,23 @@ export const postApi = rootApi.injectEndpoints({
           }
         },
       }),
+      getPostsByAuthorId: builder.query({
+        query: ({ offset, limit, authorId } = {}) => {
+          return {
+            url: `/posts/author/${authorId}`,
+            params: { offset, limit },
+            // method: "GET",
+          };
+        },
+      }),
+      getPostImagesByAuthorId: builder.query({
+        query: ({ offset, limit, authorId } = {}) => {
+          return {
+            url: `/posts/author/${authorId}/images`,
+            params: { offset, limit },
+          };
+        },
+      }),
     };
   },
 });
@@ -228,4 +245,5 @@ export const {
   useLikePostMutation,
   useUnlikePostMutation,
   useCreateCommentMutation,
+  useGetPostsByAuthorIdQuery,
 } = postApi;
