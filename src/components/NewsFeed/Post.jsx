@@ -2,9 +2,11 @@ import { Comment, Send, ThumbUp } from "@mui/icons-material";
 import { Avatar, Button, IconButton, TextField } from "@mui/material";
 import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 
 const Post = ({
   id,
+  authorId,
   fullName,
   content,
   image,
@@ -28,13 +30,15 @@ const Post = ({
     <div>
       <div className="rounded-sm bg-white px-4 pt-4 shadow">
         <div className="flex items-center gap-4">
-          <div>
+          <Link to={`/user/${authorId}`}>
             <Avatar className="!bg-[#246AA3]">
               {fullName?.[0].toUpperCase()}
             </Avatar>
-          </div>
+          </Link>
           <div>
-            <div className="font-bold">{fullName || "Anonymous"}</div>
+            <Link to={`/user/${authorId}`}>
+              <div className="font-bold">{fullName || "Anonymous"}</div>
+            </Link>
             <div className="text-sm text-gray-500">
               {dayjs(createdAt).format("DD/MM/YYYY HH:mm")}
             </div>

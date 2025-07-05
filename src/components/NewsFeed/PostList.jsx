@@ -27,6 +27,7 @@ const PostList = () => {
         <Post
           key={post._id}
           id={post._id}
+          authorId={post.author._id}
           fullName={post.author.fullName}
           content={post.content}
           image={post.image}
