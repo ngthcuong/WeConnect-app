@@ -111,7 +111,7 @@ const Post = ({
               <TextField
                 fullWidth
                 size="small"
-                placeholder="What's on your mind?"
+                placeholder="Comment..."
                 inputRef={commentInputRef}
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
@@ -123,6 +123,7 @@ const Post = ({
                   setComment("");
                   // setIsCommentOpen(false);
                 }}
+                data-testid="send-comment"
               >
                 <Send color={comment && "primary"} />
               </IconButton>

@@ -6,7 +6,6 @@ import React, { useState } from "react";
 
 const NotificationPanel = () => {
   const { data = {} } = useGetNotificationsQuery();
-  console.log(data);
 
   const [anchorEl, setAnchorEl] = useState(null);
 

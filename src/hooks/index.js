@@ -1,6 +1,9 @@
-import { useGetPostsQuery } from "@services/postApi";
+import { useCreateCommentMutation, useGetPostsQuery } from "@services/postApi";
 import { throttle } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useUserInfo } from "./useUserInfo";
+import { socket } from "@context/SocketProvider";
+import { Events } from "@libs/constants";
 
 export const useLazyLoadPosts = () => {
   const prevCountPostRef = useRef(0);
@@ -85,4 +88,29 @@ export const useInfiniteScroll = ({
   }, [handleScroll]);
 
   return handleScroll;
+};
+
+export const useNotification = () => {
+  const [createNotificationMutation] = useCreateCommentMutation();
+  const { _id: currentUserId } = useUserInfo();
+
+  async function createNotification({
+    receiverId,
+    postId,
+    notificationType,
+    notificationTypeId,
+  }) {
+    if (receiverId === currentUserId) return;
+
+    const notification = await createNotificationMutation({
+      userId: receiverId,
+      postId,
+      notificationType: notificationType,
+      notificationTypeId: notificationTypeId,
+    }).unwrap();
+
+    socket.emit(Events.CREATE_NOTIFICATION, notification);
+  }
+
+  return { createNotification };
 };

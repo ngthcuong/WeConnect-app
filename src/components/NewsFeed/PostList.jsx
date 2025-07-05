@@ -1,9 +1,9 @@
 import Post from "./Post";
 import Loading from "@components/Loading";
 
-import { useLazyLoadPosts } from "@hooks/index";
+import { useLazyLoadPosts, useNotification } from "@hooks/index";
 import { useUserInfo } from "@hooks/useUserInfo";
-import { useCreateNotificationMutation } from "@services/notificationApi";
+// import { useCreateNotificationMutation } from "@services/notificationApi";
 import {
   useCreateCommentMutation,
   useLikePostMutation,
@@ -13,8 +13,9 @@ const PostList = () => {
   const { hasMore, isFetching, posts } = useLazyLoadPosts();
   const [likePost] = useLikePostMutation();
   const [commentPost] = useCreateCommentMutation();
-  const [createNotification] = useCreateNotificationMutation();
+  // const [createNotification] = useCreateNotificationMutation();
   const { _id } = useUserInfo();
+  const { createNotification } = useNotification();
 
   if (isFetching) {
     return <Loading />;
@@ -36,14 +37,12 @@ const PostList = () => {
           onLike={async (postId) => {
             try {
               const resLike = await likePost(postId).unwrap();
-              if (post.author?._id !== _id) {
-                createNotification({
-                  userId: post.author?._id,
-                  postId: post._id,
-                  notificationType: "like",
-                  notificationTypeId: resLike?._id,
-                });
-              }
+              createNotification({
+                receiverId: post.author?._id,
+                postId: post._id,
+                notificationType: "like",
+                notificationTypeId: resLike?._id,
+              });
             } catch (error) {
               console.log(error);
             }
@@ -54,14 +53,12 @@ const PostList = () => {
                 comment,
                 postId,
               }).unwrap();
-              if (post.author?._id !== _id) {
-                createNotification({
-                  userId: post.author?._id,
-                  postId: post._id,
-                  notificationType: "comment",
-                  notificationTypeId: resComment?._id,
-                });
-              }
+              createNotification({
+                receiverId: post.author?._id,
+                postId: post._id,
+                notificationType: "comment",
+                notificationTypeId: resComment?._id,
+              });
             } catch (error) {
               console.log(error);
             }
