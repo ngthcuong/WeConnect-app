@@ -11,7 +11,6 @@ export const useLazyLoadPosts = () => {
   const {
     data = {},
     isFetching,
-    isSuccess,
     refetch,
   } = useGetPostsQuery({ offset, limit });
 

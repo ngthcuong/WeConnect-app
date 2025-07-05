@@ -22,6 +22,7 @@ import { showDrawer } from "@redux/slices/drawerSlice";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import NotificationPanel from "./NotificationPanel";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -105,14 +106,12 @@ const Header = () => {
           </IconButton>
         )}
         <div>
-          <IconButton size="small">
-            <Search />
-          </IconButton>
-          <IconButton size="small">
+          {/* <IconButton size="small">
             <Badge badgeContent={4} color="error">
               <Notifications />
             </Badge>
-          </IconButton>
+          </IconButton> */}
+          <NotificationPanel />
           <IconButton onClick={handleOpenMenuAccount} size="small">
             {/* <AccountCircle /> */}
             <Avatar className="!bg-[#246AA3]">

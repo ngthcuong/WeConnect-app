@@ -1,4 +1,3 @@
-import { method } from "lodash";
 import { rootApi } from "./rootApi";
 import { createEntityAdapter } from "@reduxjs/toolkit";
 

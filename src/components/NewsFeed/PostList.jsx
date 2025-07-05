@@ -2,13 +2,15 @@ import Post from "./Post";
 import Loading from "@components/Loading";
 
 import { useLazyLoadPosts } from "@hooks/index";
-import { useGetAuthUserQuery } from "@services/authApi";
+import { useUserInfo } from "@hooks/useUserInfo";
+import { useCreateNotificationMutation } from "@services/notificationApi";
 import { useLikePostMutation } from "@services/postApi";
 
 const PostList = () => {
   const { hasMore, isFetching, posts } = useLazyLoadPosts();
-  const [likePost, { isLoading }] = useLikePostMutation();
-  const { data } = useGetAuthUserQuery();
+  const [likePost] = useLikePostMutation();
+  const [createNotification] = useCreateNotificationMutation();
+  const { _id } = useUserInfo();
 
   if (isFetching) {
     return <Loading />;
@@ -26,9 +28,21 @@ const PostList = () => {
           likes={post.likes}
           comments={post.comments}
           createdAt={post.createdAt}
-          isLiked={post.likes.some((like) => like.author?._id === data._id)}
-          onLike={() => {
-            likePost(post._id);
+          isLiked={post.likes.some((like) => like.author?._id === _id)}
+          onLike={async (postId) => {
+            try {
+              const resLike = await likePost(postId).unwrap();
+              if (post.author?._id !== _id) {
+                createNotification({
+                  userId: post.author?._id,
+                  postId: post._id,
+                  notificationType: "like",
+                  notificationTypeId: resLike?._id,
+                });
+              }
+            } catch (error) {
+              console.log(error);
+            }
           }}
         />
       ))}
