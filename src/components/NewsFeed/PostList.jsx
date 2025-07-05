@@ -4,11 +4,15 @@ import Loading from "@components/Loading";
 import { useLazyLoadPosts } from "@hooks/index";
 import { useUserInfo } from "@hooks/useUserInfo";
 import { useCreateNotificationMutation } from "@services/notificationApi";
-import { useLikePostMutation } from "@services/postApi";
+import {
+  useCreateCommentMutation,
+  useLikePostMutation,
+} from "@services/postApi";
 
 const PostList = () => {
   const { hasMore, isFetching, posts } = useLazyLoadPosts();
   const [likePost] = useLikePostMutation();
+  const [commentPost] = useCreateCommentMutation();
   const [createNotification] = useCreateNotificationMutation();
   const { _id } = useUserInfo();
 
@@ -38,6 +42,24 @@ const PostList = () => {
                   postId: post._id,
                   notificationType: "like",
                   notificationTypeId: resLike?._id,
+                });
+              }
+            } catch (error) {
+              console.log(error);
+            }
+          }}
+          onComment={async ({ comment, postId }) => {
+            try {
+              const resComment = await commentPost({
+                comment,
+                postId,
+              }).unwrap();
+              if (post.author?._id !== _id) {
+                createNotification({
+                  userId: post.author?._id,
+                  postId: post._id,
+                  notificationType: "comment",
+                  notificationTypeId: resComment?._id,
                 });
               }
             } catch (error) {
