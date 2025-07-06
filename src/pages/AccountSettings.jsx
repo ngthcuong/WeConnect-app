@@ -1,4 +1,5 @@
-import PhotoUploader from "@components/AccountSettings/PhotoUploader";
+import UserPhotoUploader from "@components/AccountSettings/PhotoUploader";
+import { useUserInfo } from "@hooks/useUserInfo";
 import React, { useState } from "react";
 
 const AccountSettings = () => {
@@ -8,6 +9,8 @@ const AccountSettings = () => {
     avatar: null,
     coverImage: null,
   });
+
+  const { image, coverImage } = useUserInfo();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -41,17 +44,19 @@ const AccountSettings = () => {
         {/* Profile Images */}
         <div className="mb-8 grid grid-cols-1 gap-12 lg:grid-cols-2">
           {/* Avatar Section */}
-          <PhotoUploader
+          <UserPhotoUploader
             title={"Avatar"}
-            discription={"Allowed JPG or PNG."}
+            footNote={"Allowed JPG or PNG."}
             typeImage={"avatar"}
+            currentImgSrc={image}
           />
 
           {/* Cover Image Section */}
-          <PhotoUploader
+          <UserPhotoUploader
             title={"Cover Image"}
-            discription={"Allowed JPG or PNG."}
-            typeImage={"cover"}
+            footNote={"Allowed JPG or PNG."}
+            currentImgSrc={coverImage}
+            isCover={true}
           />
         </div>
 

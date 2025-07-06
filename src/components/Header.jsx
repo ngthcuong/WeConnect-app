@@ -118,7 +118,7 @@ const Header = () => {
           <NotificationPanel />
           <IconButton onClick={handleOpenMenuAccount} size="small">
             {/* <AccountCircle /> */}
-            <Avatar className="!bg-[#246AA3]">
+            <Avatar className="!bg-[#246AA3]" src={userInfo.image}>
               {userInfo?.fullName?.[0].toUpperCase()}
             </Avatar>
           </IconButton>
