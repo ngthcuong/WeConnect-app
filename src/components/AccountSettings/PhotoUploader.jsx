@@ -22,7 +22,7 @@ const UserPhotoUploader = ({ title, footNote, currentImgSrc, isCover }) => {
     [isCover, uploadPhoto],
   );
 
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     multiple: false,
     maxFiles: 1,
@@ -39,7 +39,14 @@ const UserPhotoUploader = ({ title, footNote, currentImgSrc, isCover }) => {
         />
         <div>
           <div>
-            <div {...getRootProps()}>
+            <div
+              {...getRootProps()}
+              className={`cursor-pointer rounded-lg border-2 border-dashed p-2 transition-colors ${
+                isDragActive
+                  ? "border-blue-500 bg-blue-50"
+                  : "border-gray-300 hover:border-blue-400"
+              } `}
+            >
               <input {...getInputProps()} />
               <Button
                 variant="contained"
@@ -52,7 +59,11 @@ const UserPhotoUploader = ({ title, footNote, currentImgSrc, isCover }) => {
                   ) : null
                 }
               >
-                {isLoading ? "Uploading..." : "Upload new photo"}
+                {isLoading
+                  ? "Uploading..."
+                  : isDragActive
+                    ? "Drop image here"
+                    : "Upload new photo"}
               </Button>
             </div>
           </div>
