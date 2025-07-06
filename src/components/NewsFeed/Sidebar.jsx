@@ -59,7 +59,7 @@ const SidebarContent = () => {
         <ListSubheader className="mb-2 !px-0 !leading-none font-bold">
           Settings
         </ListSubheader>
-        <Link to={"/settings/accounts"}>
+        <Link to={"/settings/account"}>
           <AccountCircle className="mr-1" />
           Accounts
         </Link>
