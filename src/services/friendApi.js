@@ -73,6 +73,32 @@ export const friendApi = rootApi.injectEndpoints({
           { type: "Pending_Friend_Requests", id: args.friendId },
         ],
       }),
+      getFriends: builder.query({
+        query: () => "/friends",
+        providesTags: (result) =>
+          result?.friends
+            ? [
+                ...result.friends.map(({ _id }) => ({
+                  type: "GET_FRIENDS",
+                  id: _id,
+                })),
+                { type: "GET_FRIENDS", id: "LIST" },
+              ]
+            : [{ type: "GET_FRIENDS", id: "LIST" }],
+      }),
+      getFriendsByUserId: builder.query({
+        query: (userId) => `/users/${userId}/friends`,
+        providesTags: (result) =>
+          result?.friends
+            ? [
+                ...result.friends.map(({ _id }) => ({
+                  type: "GET_FRIENDS",
+                  id: _id,
+                })),
+                { type: "GET_FRIENDS", id: "LIST" },
+              ]
+            : [{ type: "GET_FRIENDS", id: "LIST" }],
+      }),
     };
   },
 });
@@ -83,4 +109,6 @@ export const {
   useGetPendingFriendRequestsQuery,
   useAcceptFriendRequestMutation,
   useCancelFrientRequestMutation,
+  useGetFriendsQuery,
+  useGetFriendsByUserIdQuery,
 } = friendApi;

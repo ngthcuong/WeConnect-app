@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { useUserInfo } from "@hooks/useUserInfo";
 import {
   AccountCircle,
   Close,
@@ -31,6 +32,8 @@ const ListStyled = styled(List)`
 `;
 
 const SidebarContent = () => {
+  const { _id: userId } = useUserInfo();
+
   return (
     <div className="flex w-64 flex-col gap-4">
       <ListStyled>
@@ -42,7 +45,7 @@ const SidebarContent = () => {
           <Message className="mr-1" />
           Messenger
         </Link>
-        <Link to={"/friends"}>
+        <Link to={`/user/${userId}/friends`}>
           <People className="mr-1" />
           Friends
         </Link>

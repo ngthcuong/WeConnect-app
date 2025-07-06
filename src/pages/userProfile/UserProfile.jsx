@@ -2,22 +2,21 @@ import Header from "@components/Header";
 import Post from "@components/NewsFeed/Post";
 import { Avatar, Button, Tab, Tabs } from "@mui/material";
 import { LocationOn, Cake } from "@mui/icons-material";
-import React, { useState } from "react";
+import React from "react";
 import { useUserInfo } from "@hooks/useUserInfo";
 import PostCreation from "@components/NewsFeed/PostCreation";
 import { useGetUserInfoByIdQuery } from "@services/userApi";
 import UserPosts from "@pages/userProfile/UserPosts";
 import FriendActionButtons from "@components/FriendActionButtons";
-import { Outlet, useParams } from "react-router-dom";
-import UserFriend from "./UserFriend";
+import { Link, Outlet, useLocation, useParams } from "react-router-dom";
+import UserFriend from "./UserFriends";
 
 const UserProfile = () => {
   const { userId } = useParams();
+  const location = useLocation();
   const { _id, fullName } = useUserInfo();
   const { data = {} } = useGetUserInfoByIdQuery(userId);
   const isMyProfile = data._id === _id;
-
-  const [activeTab, setActiveTab] = useState(0);
 
   const TABS = [
     {
@@ -42,9 +41,21 @@ const UserProfile = () => {
     },
   ];
 
-  const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
+  const getActiveTabIndex = (pathname = "") => {
+    if (pathname === `/users/${userId}`) return 0;
+
+    // http://localhost:5173/user/6858ef479b5c5246978fac38/friends
+    // split("/"): chia chuỗi thành mảng []
+    // filter(Boolean): loại bỏ các giá trị bị empty string
+    // pop(): lấy ra giá trị cuối cùng của mảng
+    // => lấy được lastSagment = friends
+    const lastSagment = pathname.split("/").filter(Boolean).pop();
+    const matchedTab = TABS.find((tab) => tab.path === lastSagment);
+
+    return matchedTab ? matchedTab.index : 0;
   };
+
+  const currentTabIndex = getActiveTabIndex(location.pathname);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -82,7 +93,11 @@ const UserProfile = () => {
               <h1 className="text-3xl font-bold text-gray-900">
                 {data.fullName}
               </h1>
-              <p className="mt-1 text-gray-600">{data.totalFriends} friends</p>
+              <p className="mt-1 text-gray-600">
+                <Link to={`/user/${userId}/friends`}>
+                  {data.totalFriends} friends
+                </Link>
+              </p>
             </div>
 
             {/* Action Buttons */}
@@ -92,8 +107,7 @@ const UserProfile = () => {
           {/* Navigation Tabs */}
           <div className="mt-6 border-t border-gray-200">
             <Tabs
-              value={activeTab}
-              onChange={handleTabChange}
+              value={currentTabIndex}
               sx={{
                 "& .MuiTab-root": {
                   textTransform: "none",
@@ -110,10 +124,14 @@ const UserProfile = () => {
                 },
               }}
             >
-              <Tab label="Posts" />
-              <Tab label="About" />
-              <Tab label="Friends" />
-              <Tab label="Photos" />
+              {TABS.map((tab) => (
+                <Tab
+                  label={tab.label}
+                  key={tab.index}
+                  LinkComponent={Link}
+                  to={`/user/${userId}/${tab.path}`}
+                />
+              ))}
             </Tabs>
           </div>
         </div>

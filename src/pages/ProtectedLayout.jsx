@@ -1,4 +1,5 @@
 import Header from "@components/Header";
+import Loading from "@components/Loading";
 import SocketProvider from "@context/SocketProvider";
 import { saveUserInfo } from "@redux/slices/authSlice";
 import { useGetAuthUserQuery } from "@services/authApi";
@@ -17,7 +18,7 @@ const ProtectedLayout = () => {
   }, [response.isSuccess, dispatch, response.data]);
 
   if (response.isLoading) {
-    return <p>Loading</p>;
+    return <Loading />;
   }
 
   // Xử lý tập trung ở rootApi thay vì ở đây

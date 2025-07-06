@@ -4,7 +4,11 @@ import "./index.css";
 
 import { ThemeProvider } from "@emotion/react";
 import theme from "@/configs/mui.config";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
 
 import { Provider } from "react-redux";
 import { persistor, store } from "@redux/store";
@@ -28,7 +32,7 @@ import SearchUserPage from "@pages/SearchUserPage";
 import UserProfile from "@pages/userProfile/UserProfile";
 import Loading from "@components/Loading";
 import UserPosts from "@pages/userProfile/UserPosts";
-import UserFriend from "@pages/userProfile/UserFriend";
+import UserFriends from "@pages/userProfile/UserFriends";
 
 const router = createBrowserRouter([
   {
@@ -49,13 +53,20 @@ const router = createBrowserRouter([
             path: "/user/:userId",
             element: <UserProfile />,
             children: [
+              // Khi user truy cập /user/:userId mà không có sub-path,
+              // tự động redirect về /user/:userId/posts
+              // replace: true: Thay thế history entry thay vì tạo mới
+              {
+                index: true,
+                element: <Navigate to={"posts"} replace />,
+              },
               {
                 path: "posts",
                 element: <UserPosts />,
               },
               {
                 path: "friends",
-                element: <UserFriend />,
+                element: <UserFriends />,
               },
             ],
           },
