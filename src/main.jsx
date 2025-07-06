@@ -26,6 +26,9 @@ import OTPVerifyPage from "@pages/auth/OTPVerifyPage";
 import HomePage from "@pages/HomePage";
 import SearchUserPage from "@pages/SearchUserPage";
 import UserProfile from "@pages/userProfile/UserProfile";
+import Loading from "@components/Loading";
+import UserPosts from "@pages/userProfile/UserPosts";
+import UserFriend from "@pages/userProfile/UserFriend";
 
 const router = createBrowserRouter([
   {
@@ -45,6 +48,16 @@ const router = createBrowserRouter([
           {
             path: "/user/:userId",
             element: <UserProfile />,
+            children: [
+              {
+                path: "posts",
+                element: <UserPosts />,
+              },
+              {
+                path: "friends",
+                element: <UserFriend />,
+              },
+            ],
           },
         ],
       },

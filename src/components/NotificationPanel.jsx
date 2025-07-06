@@ -36,7 +36,11 @@ const NotificationPanel = () => {
       classes={{ paper: "!min-w-80 !max-h-80 overflow-y-auto" }}
     >
       {(data?.notifications || []).map((notification) => (
-        <MenuItem key={notification._id} className="flex !justify-between">
+        <MenuItem
+          key={notification._id}
+          className="flex !justify-between"
+          onClick={handleCloseNotificationMenu}
+        >
           <p>{generateNotificationMessage(notification)}</p>
           {!notification.seen && <Circle fontSize="10px" color="primary" />}
         </MenuItem>

@@ -5,16 +5,17 @@ import { LocationOn, Cake } from "@mui/icons-material";
 import React, { useState } from "react";
 import { useUserInfo } from "@hooks/useUserInfo";
 import PostCreation from "@components/NewsFeed/PostCreation";
-import PostList from "@components/NewsFeed/PostList";
 import { useGetUserInfoByIdQuery } from "@services/userApi";
-import UserPosts from "@components/UserProfile/UserPosts";
+import UserPosts from "@pages/userProfile/UserPosts";
 import FriendActionButtons from "@components/FriendActionButtons";
-import { useParams } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
+import UserFriend from "./UserFriend";
 
 const UserProfile = () => {
   const { userId } = useParams();
   const { _id, fullName } = useUserInfo();
   const { data = {} } = useGetUserInfoByIdQuery(userId);
+  const isMyProfile = data._id === _id;
 
   const [activeTab, setActiveTab] = useState(0);
 
@@ -39,32 +40,6 @@ const UserProfile = () => {
       label: "Photos",
       index: 3,
     },
-  ];
-
-  // Mock data - thay bằng API call thực tế
-  const userInfo = {
-    fullName: "Daniel Mark",
-    friends: 129,
-    followers: 1000,
-    location: "Ho Chi Minh City",
-    age: "32 years old",
-    introduction:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nulla dolor, ornare at commodo non, faucibus non risus. Phasellus faucibus mollis placerat. Proin blandit ac massa sed rhoncus.",
-    coverImage: "/cover-image.jpg",
-    profileImage: "/profile-avatar.jpg",
-  };
-
-  // Mock photos data
-  const photos = [
-    "/api/placeholder/150/150",
-    "/api/placeholder/150/150",
-    "/api/placeholder/150/150",
-    "/api/placeholder/150/150",
-    "/api/placeholder/150/150",
-    "/api/placeholder/150/150",
-    "/api/placeholder/150/150",
-    "/api/placeholder/150/150",
-    "/api/placeholder/150/150",
   ];
 
   const handleTabChange = (event, newValue) => {
@@ -100,7 +75,6 @@ const UserProfile = () => {
             </Avatar>
           </div>
         </div>
-
         {/* Profile Info Section */}
         <div className="rounded-b-lg bg-white px-8 pt-20 pb-6 shadow">
           <div className="flex items-center justify-between">
@@ -143,87 +117,7 @@ const UserProfile = () => {
             </Tabs>
           </div>
         </div>
-
-        {/* Tab Content - Posts Layout */}
-        {activeTab === 0 && (
-          <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-            {/* Left Sidebar */}
-            <div className="space-y-6">
-              {/* Introduction Card */}
-              <div className="rounded-lg bg-white p-6 shadow">
-                <h3 className="mb-4 text-lg font-semibold">Introduction</h3>
-                <p className="mb-4 text-sm text-gray-600">{data.about}</p>
-                <div className="space-y-2">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <LocationOn className="mr-2 h-4 w-4" />
-                    {userInfo.location}
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Cake className="mr-2 h-4 w-4" />
-                    {userInfo.age}
-                  </div>
-                </div>
-              </div>
-
-              {/* Photos Card */}
-              <div className="rounded-lg bg-white p-6 shadow">
-                <div className="mb-4 flex items-center justify-between">
-                  <h3 className="text-lg font-semibold">Photos</h3>
-                  <button className="text-sm text-blue-600 hover:underline">
-                    See all photos
-                  </button>
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  {photos.slice(0, 9).map((photo, index) => (
-                    <img
-                      key={index}
-                      src={photo}
-                      alt={`Photo ${index + 1}`}
-                      className="aspect-square rounded-lg object-cover"
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Main Content - Posts */}
-            <div className="lg:col-span-2">
-              <div className="space-y-6">
-                {userId === _id && <PostCreation />}
-                {/* Sử dụng key để reload lại component nếu khi thay đổi trang/route, component đó vẫn tồn tại */}
-                <UserPosts userId={userId} key={userId} />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Other Tab Contents */}
-        {activeTab === 1 && (
-          <div className="mt-6 rounded-lg bg-white p-6 shadow">
-            <h3 className="mb-4 text-xl font-semibold">About</h3>
-            <p className="text-gray-600">
-              About information will be displayed here.
-            </p>
-          </div>
-        )}
-
-        {activeTab === 2 && (
-          <div className="mt-6 rounded-lg bg-white p-6 shadow">
-            <h3 className="mb-4 text-xl font-semibold">Friends</h3>
-            <p className="text-gray-600">
-              Friends list will be displayed here.
-            </p>
-          </div>
-        )}
-
-        {activeTab === 3 && (
-          <div className="mt-6 rounded-lg bg-white p-6 shadow">
-            <h3 className="mb-4 text-xl font-semibold">Photos</h3>
-            <p className="text-gray-600">
-              Photo gallery will be displayed here.
-            </p>
-          </div>
-        )}
+        <Outlet context={{ userData: data, isMyProfile }} />
       </div>
     </div>
   );
