@@ -3,7 +3,7 @@ import { createEntityAdapter } from "@reduxjs/toolkit";
 
 export const postsAdapter = createEntityAdapter({
   selectId: (post) => post._id,
-  sortComparer: (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt),
+  sortComparer: (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
 });
 
 const initialState = postsAdapter.getInitialState();
@@ -75,6 +75,7 @@ export const postApi = rootApi.injectEndpoints({
             // method: "GET",
           };
         },
+        keepUnusedDataFor: 0,
         transformResponse: (response) => {
           // Chuẩn hóa thành dạng
           //  {
@@ -105,51 +106,83 @@ export const postApi = rootApi.injectEndpoints({
           const store = getState();
           const tempId = crypto.randomUUID();
 
-          // Optimistic Update
-          const patchResult = dispatch(
-            rootApi.util.updateQueryData("getPosts", "allPosts", (draft) => {
-              const currentPost = draft.entities[args];
-              if (currentPost) {
-                currentPost.likes.push({
-                  author: {
-                    _id: store.auth.user._id,
-                    fullName: store.auth.user.fullName,
-                  },
-                  _id: tempId,
-                });
-              }
-            }),
+          // Lấy tất cả các arguments đã được sử dụng để gọi getPostsByAuthorId và hiện có trong cache
+          const userPostsArgs = rootApi.util.selectCachedArgsForQuery(
+            store,
+            "getPostsByAuthorId",
           );
+          // Ex:
+          // userPostsArgs = [
+          //   { offset: 0, limit: 10, userId: "user123" },
+          //   { offset: 0, limit: 10, userId: "user456" },
+          //   { offset: 10, limit: 10, userId: "user123" },
+          // ];
+
+          // Lưu trữ các patch results
+          const patchResults = [];
+
+          // Danh sách tất cả cache queries cần được update với optimistic like
+          const cachingPairs = [
+            // Các user page đã được cache
+            ...userPostsArgs.map((arg) => [
+              "getPostsByAuthorId",
+              { userId: arg.userId },
+            ]),
+            // Home page
+            ["getPosts", "allPosts"],
+          ];
+
+          cachingPairs.forEach(([endpoint, key]) => {
+            // Optimistic Update
+            const patchResult = dispatch(
+              rootApi.util.updateQueryData(endpoint, key, (draft) => {
+                const currentPost = draft.entities[args];
+                if (currentPost) {
+                  currentPost.likes.push({
+                    author: {
+                      _id: store.auth.user._id,
+                      fullName: store.auth.user.fullName,
+                    },
+                    _id: tempId,
+                  });
+                }
+              }),
+            );
+            patchResults.push(patchResult);
+          });
 
           try {
             const { data } = await queryFulfilled;
 
-            dispatch(
-              rootApi.util.updateQueryData("getPosts", "allPosts", (draft) => {
-                const currentPost = draft.entities[args];
-                if (currentPost) {
-                  const likeIndex = currentPost.likes.findIndex(
-                    (like) => like._id === tempId,
-                  );
-                  if (likeIndex !== -1) {
-                    currentPost.likes[likeIndex] = {
-                      author: {
-                        _id: store.auth.user._id,
-                        fullName: store.auth.user.fullName,
-                      },
-                      createdAt: data.createdAt,
-                      updatedAt: data.updatedAt,
-                      _id: data._id,
-                    };
+            cachingPairs.forEach(([endpoint, key]) => {
+              dispatch(
+                rootApi.util.updateQueryData(endpoint, key, (draft) => {
+                  const currentPost = draft.entities[args];
+                  if (currentPost) {
+                    const likeIndex = currentPost.likes.findIndex(
+                      (like) => like._id === tempId,
+                    );
+                    if (likeIndex !== -1) {
+                      currentPost.likes[likeIndex] = {
+                        author: {
+                          _id: store.auth.user._id,
+                          fullName: store.auth.user.fullName,
+                        },
+                        createdAt: data.createdAt,
+                        updatedAt: data.updatedAt,
+                        _id: data._id,
+                      };
+                    }
                   }
-                }
-              }),
-            );
+                }),
+              );
+            });
           } catch (error) {
-            patchResult.undo();
+            patchResults.forEach((patchResult) => patchResult.undo());
             console.log(error);
           }
         },
+        // default behaviour: key = endpoint + params
       }),
       unlikePost: builder.mutation({
         query: (postId) => {
@@ -226,6 +259,8 @@ export const postApi = rootApi.injectEndpoints({
             // method: "GET",
           };
         },
+        keepUnusedDataFor: 0,
+        // Formar lại dữ liệu
         transformResponse: (response) => {
           const postNormalize = postsAdapter.upsertMany(
             initialState,
@@ -240,7 +275,10 @@ export const postApi = rootApi.injectEndpoints({
             },
           };
         },
-        serializeQueryArgs: () => "userPosts",
+        // Lấy key userId từ params để tạo ra một key để clear catching data khi đổi route
+        serializeQueryArgs: ({ queryArgs }) => ({
+          userId: queryArgs.userId,
+        }),
         merge: (currentCatch, newItems) => {
           return postsAdapter.upsertMany(currentCatch, newItems.entities);
         },
@@ -252,6 +290,7 @@ export const postApi = rootApi.injectEndpoints({
             params: { offset, limit },
           };
         },
+        keepUnusedDataFor: 0,
       }),
     };
   },

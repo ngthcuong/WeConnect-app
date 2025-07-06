@@ -9,11 +9,17 @@ import { useUserInfo } from "./useUserInfo";
 import { socket } from "@context/SocketProvider";
 import { Events } from "@libs/constants";
 
-export const useLazyLoadPosts = ({ userId }) => {
+export const useLazyLoadPosts = ({ userId } = {}) => {
   const prevCountPostRef = useRef(0);
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
   const limit = 10;
+
+  useEffect(() => {
+    setOffset(0);
+    setHasMore(true);
+    prevCountPostRef.current = 0;
+  }, [userId]);
 
   const {
     data: userProfileData = { ids: [], entities: [] },
@@ -32,7 +38,6 @@ export const useLazyLoadPosts = ({ userId }) => {
   const refetch = userId ? userProfileRefetch : homeRefetch;
 
   const posts = (data.ids || []).map((id) => data.entities[id]);
-  console.log(data);
 
   useEffect(() => {
     if (!isFetching && data && hasMore) {

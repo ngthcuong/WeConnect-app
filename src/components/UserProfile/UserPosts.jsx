@@ -6,12 +6,11 @@ import { useUserInfo } from "@hooks/useUserInfo";
 // import { useCreateNotificationMutation } from "@services/notificationApi";
 import {
   useCreateCommentMutation,
-  useGetPostsByAuthorIdQuery,
   useLikePostMutation,
 } from "@services/postApi";
 
 const UserPosts = ({ userId }) => {
-  const { isFetching, posts } = useLazyLoadPosts({ userId });
+  const { isFetching, posts, hasMore } = useLazyLoadPosts({ userId });
   const [likePost] = useLikePostMutation();
   const [commentPost] = useCreateCommentMutation();
   // const { data = {}, isFetching } = useGetPostsByAuthorIdQuery({
@@ -68,7 +67,7 @@ const UserPosts = ({ userId }) => {
         />
       ))}
       {isFetching && <Loading />}
-      {/* {!hasMore && <div className="text-center">No more posts</div>} */}
+      {!hasMore && <div className="text-center">No more posts</div>}
     </div>
   );
 };

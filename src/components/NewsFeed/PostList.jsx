@@ -17,9 +17,9 @@ const PostList = () => {
   const { _id } = useUserInfo();
   const { createNotification } = useNotification();
 
-  if (isFetching) {
-    return <Loading />;
-  }
+  // if (isFetching) {
+  //   return <Loading />;
+  // }
 
   return (
     <div className="flex flex-col gap-4">
@@ -66,6 +66,7 @@ const PostList = () => {
           }}
         />
       ))}
+      {isFetching && <Loading />}
       {!hasMore && <div className="text-center">No more posts</div>}
     </div>
   );

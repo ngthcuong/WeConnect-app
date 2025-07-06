@@ -216,7 +216,8 @@ const UserProfile = () => {
             <div className="lg:col-span-2">
               <div className="space-y-6">
                 {userId === _id && <PostCreation />}
-                <UserPosts userId={userId} />
+                {/* Sử dụng key để reload lại component nếu khi thay đổi trang/route, component đó vẫn tồn tại */}
+                <UserPosts userId={userId} key={userId} />
               </div>
             </div>
           </div>
