@@ -41,27 +41,51 @@ export const postApi = rootApi.injectEndpoints({
             __v: 0,
           };
 
-          const patchResult = dispatch(
-            rootApi.util.updateQueryData("getPosts", "allPosts", (draft) => {
-              // draft.unshift(newPost);
-              postsAdapter.addOne(draft, newPost);
-            }),
+          const userPostsArgs = rootApi.util.selectCachedArgsForQuery(
+            store,
+            "getPostsByAuthorId",
           );
+
+          // Lưu trữ các patch results
+          const patchResults = [];
+
+          // Danh sách tất cả cache queries cần được update với optimistic like
+          const cachingPairs = [
+            // Các user page đã được cache
+            ...userPostsArgs.map((arg) => [
+              "getPostsByAuthorId",
+              { userId: arg.userId },
+            ]),
+            // Home page
+            ["getPosts", "allPosts"],
+          ];
+
+          cachingPairs.forEach(([endpoint, key]) => {
+            const patchResult = dispatch(
+              rootApi.util.updateQueryData(endpoint, key, (draft) => {
+                // draft.unshift(newPost);
+                postsAdapter.addOne(draft, newPost);
+              }),
+            );
+            patchResults.push(patchResult);
+          });
 
           try {
             const { data } = await queryFulfilled;
-            dispatch(
-              rootApi.util.updateQueryData("getPosts", "allPosts", (draft) => {
-                // const index = draft.findIndex((post) => post._id === tempId);
-                // if (index) {
-                //   draft[index] = data;
-                // }
-                postsAdapter.removeOne(draft, tempId);
-                postsAdapter.addOne(draft, data);
-              }),
-            );
+            cachingPairs.forEach(([endpoint, key]) => {
+              dispatch(
+                rootApi.util.updateQueryData(endpoint, key, (draft) => {
+                  // const index = draft.findIndex((post) => post._id === tempId);
+                  // if (index) {
+                  //   draft[index] = data;
+                  // }
+                  postsAdapter.removeOne(draft, tempId);
+                  postsAdapter.addOne(draft, data);
+                }),
+              );
+            });
           } catch (err) {
-            patchResult.undo();
+            patchResults.forEach((patchResult) => patchResult.undo());
             console.log(err);
           }
         },
@@ -208,45 +232,70 @@ export const postApi = rootApi.injectEndpoints({
           const store = getState();
           const tempId = crypto.randomUUID();
 
-          const patchResult = dispatch(
-            rootApi.util.updateQueryData("getPosts", "allPosts", (draft) => {
-              const currentPost = draft.entities[args.postId];
-
-              const optimisticComment = {
-                _id: tempId,
-                comment: args.comment,
-                author: {
-                  _id: store?.auth?.user?._id,
-                  fullName: store?.auth?.user?.fullName,
-                },
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-              };
-
-              if (currentPost) {
-                currentPost.comments.push(optimisticComment);
-              }
-            }),
+          const userPostsArgs = rootApi.util.selectCachedArgsForQuery(
+            store,
+            "getPostsByAuthorId",
           );
 
-          try {
-            const { data } = await queryFulfilled;
-            dispatch(
-              rootApi.util.updateQueryData("getPosts", "allPosts", (draft) => {
+          // Lưu trữ các patch results
+          const patchResults = [];
+
+          // Danh sách tất cả cache queries cần được update với optimistic like
+          const cachingPairs = [
+            // Các user page đã được cache
+            ...userPostsArgs.map((arg) => [
+              "getPostsByAuthorId",
+              { userId: arg.userId },
+            ]),
+            // Home page
+            ["getPosts", "allPosts"],
+          ];
+
+          cachingPairs.forEach(([endpoint, key]) => {
+            // Optimistic Update
+            const patchResult = dispatch(
+              rootApi.util.updateQueryData(endpoint, key, (draft) => {
                 const currentPost = draft.entities[args.postId];
 
-                if (currentPost) {
-                  const commentIndex = currentPost.comments.findIndex(
-                    (comment) => comment._id === tempId,
-                  );
+                const optimisticComment = {
+                  _id: tempId,
+                  comment: args.comment,
+                  author: {
+                    _id: store?.auth?.user?._id,
+                    fullName: store?.auth?.user?.fullName,
+                  },
+                  createdAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString(),
+                };
 
-                  if (commentIndex !== -1)
-                    currentPost.comments[commentIndex] = data;
+                if (currentPost) {
+                  currentPost.comments.push(optimisticComment);
                 }
               }),
             );
+            patchResults.push(patchResult);
+          });
+
+          try {
+            const { data } = await queryFulfilled;
+            cachingPairs.forEach(([endpoint, key]) => {
+              dispatch(
+                rootApi.util.updateQueryData(endpoint, key, (draft) => {
+                  const currentPost = draft.entities[args.postId];
+
+                  if (currentPost) {
+                    const commentIndex = currentPost.comments.findIndex(
+                      (comment) => comment._id === tempId,
+                    );
+
+                    if (commentIndex !== -1)
+                      currentPost.comments[commentIndex] = data;
+                  }
+                }),
+              );
+            });
           } catch (error) {
-            patchResult.undo();
+            patchResults.forEach((patchResult) => patchResult.undo());
             console.log(error);
           }
         },
