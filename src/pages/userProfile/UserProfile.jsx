@@ -3,18 +3,18 @@ import Post from "@components/NewsFeed/Post";
 import { Avatar, Button, Tab, Tabs } from "@mui/material";
 import { LocationOn, Cake } from "@mui/icons-material";
 import React, { useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
 import { useUserInfo } from "@hooks/useUserInfo";
 import PostCreation from "@components/NewsFeed/PostCreation";
 import PostList from "@components/NewsFeed/PostList";
 import { useGetUserInfoByIdQuery } from "@services/userApi";
 import UserPosts from "@components/UserProfile/UserPosts";
+import FriendActionButtons from "@components/FriendActionButtons";
+import { useParams } from "react-router-dom";
 
 const UserProfile = () => {
   const { userId } = useParams();
-  const location = useLocation();
   const { _id, fullName } = useUserInfo();
-  const { data = {}, isLoading, isFetching } = useGetUserInfoByIdQuery(userId);
+  const { data = {} } = useGetUserInfoByIdQuery(userId);
 
   const [activeTab, setActiveTab] = useState(0);
 
@@ -112,33 +112,7 @@ const UserProfile = () => {
             </div>
 
             {/* Action Buttons */}
-            {userId !== _id && (
-              <div className="flex gap-3">
-                <Button
-                  variant="contained"
-                  sx={{
-                    bgcolor: "#246AA3",
-                    textTransform: "none",
-                    borderRadius: "8px",
-                    paddingX: 3,
-                  }}
-                >
-                  Add Friend
-                </Button>
-                <Button
-                  variant="outlined"
-                  sx={{
-                    borderColor: "#246AA3",
-                    color: "#246AA3",
-                    textTransform: "none",
-                    borderRadius: "8px",
-                    paddingX: 3,
-                  }}
-                >
-                  Message
-                </Button>
-              </div>
-            )}
+            {userId !== _id && <FriendActionButtons userInfo={data} />}
           </div>
 
           {/* Navigation Tabs */}

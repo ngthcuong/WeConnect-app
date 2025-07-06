@@ -32,6 +32,7 @@ export const friendApi = rootApi.injectEndpoints({
         },
         invalidatesTags: (result, error, args) => [
           { type: "Users", id: args.friendId },
+          { type: "GET_USER_INFO_BY_ID", id: result._id },
         ],
       }),
       getPendingFriendRequests: builder.query({
