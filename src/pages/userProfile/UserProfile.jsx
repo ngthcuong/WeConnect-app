@@ -10,11 +10,12 @@ import UserPosts from "@pages/userProfile/UserPosts";
 import FriendActionButtons from "@components/FriendActionButtons";
 import { Link, Outlet, useLocation, useParams } from "react-router-dom";
 import UserFriend from "./UserFriends";
+import UserAvatar from "@components/UserAvatar";
 
 const UserProfile = () => {
   const { userId } = useParams();
   const location = useLocation();
-  const { _id, fullName } = useUserInfo();
+  const { _id } = useUserInfo();
   const { data = {} } = useGetUserInfoByIdQuery(userId);
   const isMyProfile = data._id === _id;
 
@@ -72,7 +73,7 @@ const UserProfile = () => {
 
           {/* Profile Avatar */}
           <div className="absolute -bottom-16 left-8">
-            <Avatar
+            {/* <Avatar
               alt={fullName}
               sx={{
                 width: 120,
@@ -83,7 +84,11 @@ const UserProfile = () => {
               }}
             >
               {fullName?.[0].toUpperCase()}
-            </Avatar>
+            </Avatar> */}
+            <UserAvatar
+              src={data.image}
+              className="!h-40 !w-40 !border-white !bg-[#246AA3] !text-4xl"
+            />
           </div>
         </div>
         {/* Profile Info Section */}
