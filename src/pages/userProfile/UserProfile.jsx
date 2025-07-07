@@ -15,7 +15,7 @@ import UserAvatar from "@components/UserAvatar";
 const UserProfile = () => {
   const { userId } = useParams();
   const location = useLocation();
-  const { _id } = useUserInfo();
+  const { _id, coverImage } = useUserInfo();
   const { data = {} } = useGetUserInfoByIdQuery(userId);
   const isMyProfile = data._id === _id;
 
@@ -63,9 +63,9 @@ const UserProfile = () => {
       <div className="mx-auto max-w-6xl px-4">
         {/* Cover Photo Section */}
         <div className="relative">
-          <div className="h-80 w-full rounded-t-lg bg-gradient-to-r from-blue-400 to-purple-500">
+          <div className="h-80 rounded-t-lg bg-gradient-to-r from-blue-400 to-purple-500">
             <img
-              src="https://placehold.co/1920x320"
+              src={coverImage}
               alt="Cover"
               className="h-full w-full rounded-t-lg object-cover"
             />
@@ -73,18 +73,6 @@ const UserProfile = () => {
 
           {/* Profile Avatar */}
           <div className="absolute -bottom-16 left-8">
-            {/* <Avatar
-              alt={fullName}
-              sx={{
-                width: 120,
-                height: 120,
-                border: "4px solid white",
-                fontSize: "2rem",
-                bgcolor: "#246AA3",
-              }}
-            >
-              {fullName?.[0].toUpperCase()}
-            </Avatar> */}
             <UserAvatar
               src={data.image}
               className="!h-40 !w-40 !border-white !bg-[#246AA3] !text-4xl"

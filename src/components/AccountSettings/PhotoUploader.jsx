@@ -1,14 +1,48 @@
 import { Button, CircularProgress } from "@mui/material";
+import { showSnackbar } from "@redux/slices/snackBarSlice";
 import {
   useDeletePhotoMutation,
   useUploadPhotoMutation,
 } from "@services/userApi";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
+import { useDispatch } from "react-redux";
 
 const UserPhotoUploader = ({ title, footNote, currentImgSrc, isCover }) => {
-  const [uploadPhoto, { isLoading }] = useUploadPhotoMutation();
-  const [deletePhoto, { isLoading: isDeleting }] = useDeletePhotoMutation();
+  const [
+    uploadPhoto,
+    { isLoading, isError: isErrorUpoading, isSuccess: isSuccessUploading },
+  ] = useUploadPhotoMutation();
+  const [
+    deletePhoto,
+    {
+      isLoading: isDeleting,
+      isError: isErrorDeleting,
+      isSuccess: isSuccessDeleting,
+    },
+  ] = useDeletePhotoMutation();
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isSuccessUploading) {
+      dispatch(showSnackbar({ message: "Upload image successed" }));
+    }
+    if (isSuccessDeleting) {
+      dispatch(showSnackbar({ message: "Delete image successed" }));
+    }
+
+    if (isErrorUpoading) {
+      dispatch(
+        showSnackbar({ message: "Upload image failed", severity: "error" }),
+      );
+    }
+    if (isErrorDeleting) {
+      dispatch(
+        showSnackbar({ message: "Delete image failed", severity: "error" }),
+      );
+    }
+  });
 
   const onDrop = useCallback(
     (acceptedFiles) => {
@@ -35,7 +69,7 @@ const UserPhotoUploader = ({ title, footNote, currentImgSrc, isCover }) => {
       <div className="flex items-center gap-4">
         <img
           src={currentImgSrc ?? "https://placehold.co/100x100"}
-          className="h-24 w-24 rounded object-cover"
+          className={`h-24 w-24 rounded ${isCover ? "object-contain" : "object-cover"}`}
         />
         <div>
           <div>
