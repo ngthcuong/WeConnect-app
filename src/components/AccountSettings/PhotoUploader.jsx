@@ -8,7 +8,12 @@ import { useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { useDispatch } from "react-redux";
 
-const UserPhotoUploader = ({ title, footNote, currentImgSrc, isCover }) => {
+const UserPhotoUploader = ({
+  title,
+  footNote,
+  currentImgSrc,
+  isCover = false,
+}) => {
   const [
     uploadPhoto,
     { isLoading, isError: isErrorUpoading, isSuccess: isSuccessUploading },

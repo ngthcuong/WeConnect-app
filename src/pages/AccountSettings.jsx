@@ -1,37 +1,10 @@
 import UserPhotoUploader from "@components/AccountSettings/PhotoUploader";
+import UpdateUserInfoForm from "@components/AccountSettings/UpdateUserInfoForm";
 import { useUserInfo } from "@hooks/useUserInfo";
-import React, { useState } from "react";
+import React from "react";
 
 const AccountSettings = () => {
-  const [formData, setFormData] = useState({
-    fullName: "John",
-    about: "",
-    avatar: null,
-    coverImage: null,
-  });
-
   const { image, coverImage } = useUserInfo();
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSaveChanges = () => {
-    console.log("Saving changes:", formData);
-  };
-
-  const handleCancel = () => {
-    setFormData({
-      fullName: "John",
-      about: "",
-      avatar: null,
-      coverImage: null,
-    });
-  };
 
   return (
     <div className="mx-auto mt-4 min-h-screen max-w-4xl bg-gray-50">
@@ -47,7 +20,6 @@ const AccountSettings = () => {
           <UserPhotoUploader
             title={"Avatar"}
             footNote={"Allowed JPG or PNG."}
-            typeImage={"avatar"}
             currentImgSrc={image}
           />
 
@@ -62,57 +34,7 @@ const AccountSettings = () => {
 
         {/* Form Fields */}
         <div className="mb-8 space-y-6">
-          <div>
-            <label
-              htmlFor="fullName"
-              className="mb-2 block text-sm font-medium text-gray-700"
-            >
-              Full Name
-            </label>
-            <input
-              type="text"
-              id="fullName"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleInputChange}
-              placeholder="John"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="about"
-              className="mb-2 block text-sm font-medium text-gray-700"
-            >
-              About
-            </label>
-            <textarea
-              id="about"
-              name="about"
-              value={formData.about}
-              onChange={handleInputChange}
-              placeholder="Tell us about yourself..."
-              rows="4"
-              className="w-full resize-none rounded-md border border-gray-300 px-3 py-2 shadow-sm transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex gap-4">
-          <button
-            onClick={handleSaveChanges}
-            className="rounded-md bg-blue-600 px-6 py-2 font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
-          >
-            Save Changes
-          </button>
-          <button
-            onClick={handleCancel}
-            className="rounded-md bg-gray-500 px-6 py-2 font-medium text-white transition-colors hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:outline-none"
-          >
-            Cancel
-          </button>
+          <UpdateUserInfoForm />
         </div>
       </div>
     </div>
