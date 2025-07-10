@@ -1,8 +1,9 @@
-import { generateNotificationMessage } from "@libs/utils";
+// import { generateNotificationMessage } from "@libs/utils";
 import { Circle, Notifications } from "@mui/icons-material";
 import { Badge, IconButton, Menu, MenuItem } from "@mui/material";
 import { useGetNotificationsQuery } from "@services/notificationApi";
 import React, { useState } from "react";
+import NotificationItem from "./NotificationItem";
 
 const NotificationPanel = () => {
   const { data = {} } = useGetNotificationsQuery();
@@ -41,8 +42,11 @@ const NotificationPanel = () => {
           className="flex !justify-between"
           onClick={handleCloseNotificationMenu}
         >
-          <p>{generateNotificationMessage(notification)}</p>
-          {!notification.seen && <Circle fontSize="10px" color="primary" />}
+          {/* <p>{generateNotificationMessage(notification)}</p> */}
+          <NotificationItem {...notification} />
+          {!notification.seen && (
+            <Circle color="primary" className="!ml-2 !h-3 !w-3" />
+          )}
         </MenuItem>
       ))}
     </Menu>

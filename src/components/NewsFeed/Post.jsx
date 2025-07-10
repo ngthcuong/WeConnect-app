@@ -1,6 +1,7 @@
+import TimeAgo from "@components/TimeAgo";
 import { Comment, Send, ThumbUp } from "@mui/icons-material";
 import { Avatar, Button, IconButton, TextField } from "@mui/material";
-import dayjs from "dayjs";
+// import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -40,7 +41,8 @@ const Post = ({
               <div className="font-bold">{fullName || "Anonymous"}</div>
             </Link>
             <div className="text-sm text-gray-500">
-              {dayjs(createdAt).format("DD/MM/YYYY HH:mm")}
+              {/* {dayjs(createdAt).format("DD/MM/YYYY HH:mm")} */}
+              <TimeAgo date={createdAt} />
             </div>
           </div>
         </div>
@@ -96,7 +98,8 @@ const Post = ({
                         {comment?.author?.fullName}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {dayjs(comment.createdAt).format("DD/MM/YYYY HH:mm")}
+                        {/* {dayjs(comment.createdAt).format("DD/MM/YYYY HH:mm")} */}
+                        <TimeAgo date={comment.createdAt} />
                       </p>
                     </div>
                     <p>{comment.comment}</p>

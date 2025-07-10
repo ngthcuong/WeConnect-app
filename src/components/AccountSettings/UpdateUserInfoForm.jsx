@@ -19,6 +19,7 @@ const UpdateUserInfoForm = () => {
     about: yup.string(),
     fullName: yup.string().required(),
   });
+
   const {
     control,
     reset,
@@ -34,7 +35,6 @@ const UpdateUserInfoForm = () => {
 
   async function onSubmit(formValues) {
     try {
-      console.log({ formValues });
       await updateUserProfile(formValues).unwrap();
       reset(formValues);
       dispatch(showSnackbar({ message: "Update User Profile Successfully!" }));
