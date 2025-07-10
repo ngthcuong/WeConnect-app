@@ -16,6 +16,32 @@ export const messageApi = rootApi.injectEndpoints({
         params: { userId, offset, limit },
       }),
       serializeQueryArgs: ({ queryArgs }) => ({ userId: queryArgs.userId }),
+      providesTags: (result, error, { userId }) => {
+        return [{ type: "MESSAGES", id: userId }];
+      },
+    }),
+    // Send a new message to another user.
+    sendMessage: builder.mutation({
+      query: ({ message, receiver }) => ({
+        url: `/messages/create`,
+        body: { message, receiver },
+        method: "POST",
+      }),
+    }),
+    // Mark all messages from a specific sender as seen.
+    updateSeenMessage: builder.mutation({
+      query: ({ sender }) => ({
+        url: `/messages/update-seen`,
+        body: { sender },
+        method: "PUT",
+      }),
     }),
   }),
 });
+
+export const {
+  useGetConversationQuery,
+  useGetMessagesQuery,
+  useSendMessageMutation,
+  useUpdateSeenMessageMutation,
+} = messageApi;

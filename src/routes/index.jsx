@@ -13,6 +13,8 @@ import UserFriends from "@pages/userProfile/UserFriends";
 
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import AccountSettings from "@pages/AccountSettings";
+import ChatDetail from "@components/Message/ChatDetail";
+import MessagesPage from "@pages/messages/MessagesPage";
 
 export const router = createBrowserRouter([
   {
@@ -56,6 +58,16 @@ export const router = createBrowserRouter([
               {
                 path: "account",
                 element: <AccountSettings />,
+              },
+            ],
+          },
+          {
+            path: "/messages",
+            element: <MessagesPage />,
+            children: [
+              {
+                path: ":userId",
+                element: <ChatDetail />,
               },
             ],
           },
