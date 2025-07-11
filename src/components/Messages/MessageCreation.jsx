@@ -5,7 +5,7 @@ import { useSendMessageMutation } from "@services/messageApi";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 
-const MessageCreation = ({ userId, onSendMessage }) => {
+const MessageCreation = ({ userId, messageEndRef }) => {
   const dispatch = useDispatch();
 
   const [message, setMessage] = useState("");
@@ -16,7 +16,8 @@ const MessageCreation = ({ userId, onSendMessage }) => {
     try {
       await sendMessage({ message, receiver: userId }).unwrap();
       setMessage("");
-      if (onSendMessage) onSendMessage();
+      messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      // if (onSendMessage) onSendMessage();
     } catch (error) {
       console.error("Failed to send message:", error);
       dispatch(

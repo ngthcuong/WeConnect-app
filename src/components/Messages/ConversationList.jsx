@@ -14,8 +14,6 @@ const ConversationList = () => {
   const { userId: activeUserId } = useParams();
   const { _id: currentUserId } = useUserInfo();
 
-  console.log(conversations);
-
   const filteredConversations = conversations.filter((conversation) => {
     const partner =
       conversation.sender._id === currentUserId

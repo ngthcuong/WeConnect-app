@@ -15,7 +15,7 @@ const ChatDetail = () => {
   const { fullName, image } = useGetUserInfoByIdQuery(userId);
   const [offset, setOffset] = useState(0);
   const limit = 10;
-  const messageRef = useRef(null);
+  const messageEndRef = useRef(null);
 
   const { data = [] } = useGetMessagesQuery({
     userId,
@@ -24,13 +24,12 @@ const ChatDetail = () => {
   });
   const messages = useMemo(() => data.messages || [], [data.messages]);
 
-  const scrollToBottom = () => {
-    messageRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  // const scrollToBottom = () => {
+  //   messageRef.current?.scrollIntoView({ behavior: "smooth" });
+  // };
+  // useEffect(() => {
+  //   scrollToBottom();
+  // }, [messages]);
 
   return (
     <div className="flex h-[calc(100vh-110px)] flex-col overflow-hidden rounded-lg border-gray-300 bg-[#f8f7fa]">
@@ -106,12 +105,16 @@ const ChatDetail = () => {
               </div>
             );
           })}
-          <div ref={messageRef} />
+          <div ref={messageEndRef} />
         </div>
       </div>
 
       {/* Message Input */}
-      <MessageCreation userId={userId} onSendMessage={scrollToBottom} />
+      <MessageCreation
+        userId={userId}
+        // onSendMessage={scrollToBottom}
+        messageEndRef={messageEndRef}
+      />
     </div>
   );
 };
