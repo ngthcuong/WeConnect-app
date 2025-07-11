@@ -58,11 +58,17 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 export const rootApi = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Posts", "Users", "Pending_Friend_Requests"],
+  tagTypes: [
+    "Posts",
+    "Users",
+    "Pending_Friend_Requests",
+    "CONVERSATIONS",
+    "MESSAGES",
+  ],
   keepUnusedDataFor: 20, // instead of 60 seconds (default)
   // refetchOnMountOrArgChange: true,
   // refetchOnFocus: true, // need config a func in store.js
-  endpoints: (builder) => {
+  endpoints: () => {
     return {
       // Auth
       // register: builder.mutation({

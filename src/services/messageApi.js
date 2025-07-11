@@ -27,6 +27,10 @@ export const messageApi = rootApi.injectEndpoints({
         body: { message, receiver },
         method: "POST",
       }),
+      invalidatesTags: (result, error, { receiver }) => [
+        "CONVERSATIONS",
+        { type: "MESSAGES", id: receiver },
+      ],
     }),
     // Mark all messages from a specific sender as seen.
     updateSeenMessage: builder.mutation({

@@ -2,28 +2,28 @@ import { Mic, Send } from "@mui/icons-material";
 import { Button, IconButton, TextField } from "@mui/material";
 import { showSnackbar } from "@redux/slices/snackBarSlice";
 import { useSendMessageMutation } from "@services/messageApi";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 
-const MessageCreation = ({ userId }) => {
+const MessageCreation = ({ userId, onSendMessage }) => {
   const dispatch = useDispatch();
 
   const [message, setMessage] = useState("");
 
-  const [sendMessage, { isError }] = useSendMessageMutation();
+  const [sendMessage] = useSendMessageMutation();
 
   const handleSendMessage = async () => {
-    await sendMessage({ message: message, receiver: userId }).unwrap();
-    setMessage("");
-  };
-
-  useEffect(() => {
-    if (isError) {
+    try {
+      await sendMessage({ message, receiver: userId }).unwrap();
+      setMessage("");
+      if (onSendMessage) onSendMessage();
+    } catch (error) {
+      console.error("Failed to send message:", error);
       dispatch(
-        showSnackbar({ message: "Can not send message!", severity: "error" }),
+        showSnackbar({ message: "Cannot send message!", severity: "error" }),
       );
     }
-  });
+  };
 
   return (
     <div className="mx-4 my-2 bg-white p-3">
@@ -35,6 +35,11 @@ const MessageCreation = ({ userId }) => {
           size="small"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && message.trim()) {
+              handleSendMessage();
+            }
+          }}
           slotProps={{
             endAdornment: (
               <IconButton size="small">
