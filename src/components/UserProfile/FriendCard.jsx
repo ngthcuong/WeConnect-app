@@ -41,7 +41,7 @@ const FriendCard = ({ friend }) => (
         </Typography>
 
         <Typography variant="body2" color="text.secondary" className="mb-2">
-          {friend.mutualFriends} mutual friends
+          {friend.mutualFriends || 0} mutual friends
         </Typography>
 
         {/* Action buttons */}

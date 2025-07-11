@@ -1,15 +1,9 @@
-import Header from "@components/Header";
-import Post from "@components/NewsFeed/Post";
-import { Avatar, Button, Tab, Tabs } from "@mui/material";
-import { LocationOn, Cake } from "@mui/icons-material";
+import { Tab, Tabs } from "@mui/material";
 import React from "react";
 import { useUserInfo } from "@hooks/useUserInfo";
-import PostCreation from "@components/NewsFeed/PostCreation";
 import { useGetUserInfoByIdQuery } from "@services/userApi";
-import UserPosts from "@pages/userProfile/UserPosts";
 import FriendActionButtons from "@components/FriendActionButtons";
 import { Link, Outlet, useLocation, useParams } from "react-router-dom";
-import UserFriend from "./UserFriends";
 import UserAvatar from "@components/UserAvatar";
 
 const UserProfile = () => {

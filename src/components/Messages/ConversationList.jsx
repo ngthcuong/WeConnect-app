@@ -24,8 +24,8 @@ const ConversationList = () => {
   });
 
   return (
-    <div className="card flex h-[calc(100vh-150px)] flex-col overflow-hidden rounded-r-none bg-white p-0">
-      <div className="border-b p-3">
+    <div className="flex h-[calc(100vh-110px)] flex-col overflow-hidden rounded-r-none border-r border-b border-gray-300 bg-white p-0">
+      <div className="border border-x-0 border-y border-gray-300 p-3">
         <TextField
           fullWidth
           size="small"
