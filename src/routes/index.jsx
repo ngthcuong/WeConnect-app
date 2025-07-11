@@ -13,7 +13,7 @@ import UserFriends from "@pages/userProfile/UserFriends";
 
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import AccountSettings from "@pages/AccountSettings";
-import ChatDetail from "@components/Message/ChatDetail";
+import ChatDetail from "@components/Messages/ChatDetail";
 import MessagesPage from "@pages/messages/MessagesPage";
 
 export const router = createBrowserRouter([
