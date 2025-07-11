@@ -2,7 +2,7 @@ import TimeAgo from "@components/TimeAgo";
 import UserAvatar from "@components/UserAvatar";
 import { useUserInfo } from "@hooks/useUserInfo";
 import { Circle, Search as SearchIcon } from "@mui/icons-material";
-import { InputAdornment, TextField } from "@mui/material";
+import { InputAdornment, TextField, Typography } from "@mui/material";
 import { useGetConversationQuery } from "@services/messageApi";
 import classNames from "classnames";
 import { useState } from "react";
@@ -13,6 +13,8 @@ const ConversationList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { userId: activeUserId } = useParams();
   const { _id: currentUserId } = useUserInfo();
+
+  console.log(conversations);
 
   const filteredConversations = conversations.filter((conversation) => {
     const partner =
@@ -61,10 +63,9 @@ const ConversationList = () => {
               <Link to={`/messages/${partner._id}`} key={partner._id}>
                 <div
                   className={classNames(
-                    "relative flex items-center gap-2 px-4 py-3 hover:bg-gray-100",
+                    "relative flex items-center gap-2 px-4 py-3 hover:bg-[#247fc3]",
                     {
-                      "bg-primary-main hover:bg-primary-dark text-white":
-                        isActive,
+                      "hover:bg-primary-dark bg-[#2b97e9] text-white": isActive,
                     },
                   )}
                 >
@@ -76,15 +77,16 @@ const ConversationList = () => {
                     })}
                   />
                   <div className="w-full">
-                    <div className="flex justify-between">
-                      <p
-                        className={classNames(
-                          "font-semibold",
-                          isUnread ? "font-extrabold" : "",
-                        )}
+                    <div className="flex items-center justify-between">
+                      <Typography
+                        noWrap
+                        sx={{
+                          fontWeight: isUnread ? 800 : 600,
+                          maxWidth: 100,
+                        }}
                       >
                         {partner.fullName}
-                      </p>
+                      </Typography>
                       <TimeAgo
                         date={conversation.createdAt}
                         className={classNames("text-dark-400 text-xs", {
