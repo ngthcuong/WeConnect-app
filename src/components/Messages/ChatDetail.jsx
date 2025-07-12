@@ -1,12 +1,15 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Avatar, IconButton, TextField, Button } from "@mui/material";
-import { Phone, Videocam, Send, Mic } from "@mui/icons-material";
+import { IconButton } from "@mui/material";
+import { Phone, Videocam } from "@mui/icons-material";
 import UserAvatar from "@components/UserAvatar";
 import { useParams } from "react-router-dom";
 import { useUserInfo } from "@hooks/useUserInfo";
 import TimeAgo from "@components/TimeAgo";
 import MessageCreation from "./MessageCreation";
-import { useGetMessagesQuery } from "@services/messageApi";
+import {
+  useGetMessagesQuery,
+  useUpdateSeenMessageMutation,
+} from "@services/messageApi";
 import { useGetUserInfoByIdQuery } from "@services/userApi";
 
 const ChatDetail = () => {
@@ -23,6 +26,13 @@ const ChatDetail = () => {
     limit,
   });
   const messages = useMemo(() => data.messages || [], [data.messages]);
+
+  const [updateSeenMessage] = useUpdateSeenMessageMutation();
+
+  useEffect(() => {
+    if (userId) updateSeenMessage(userId);
+    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [updateSeenMessage, userId]);
 
   // const scrollToBottom = () => {
   //   messageRef.current?.scrollIntoView({ behavior: "smooth" });

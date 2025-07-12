@@ -39,6 +39,7 @@ export const messageApi = rootApi.injectEndpoints({
         body: { sender },
         method: "PUT",
       }),
+      invalidatesTags: ["CONVERSATIONS"],
     }),
   }),
 });

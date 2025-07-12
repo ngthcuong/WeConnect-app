@@ -24,7 +24,7 @@ const ConversationList = () => {
   });
 
   return (
-    <div className="flex h-[calc(100vh-110px)] flex-col overflow-hidden rounded-r-none border-r border-b border-gray-300 bg-white p-0">
+    <div className="flex h-[calc(100vh-110px)] flex-col overflow-y-auto rounded-r-none border-r border-b border-gray-300 bg-white p-0">
       <div className="border border-x-0 border-y border-gray-300 p-3">
         <TextField
           fullWidth
@@ -109,7 +109,7 @@ const ConversationList = () => {
                     </p>
                   </div>
                   {isUnread && (
-                    <Circle className="text-primary-main absolute top-1/2 right-4 ml-1 !h-2 !w-2" />
+                    <Circle className="text-[#2b97e9]absolute top-1/2 right-4 ml-1 !h-2 !w-2" />
                   )}
                 </div>
               </Link>
