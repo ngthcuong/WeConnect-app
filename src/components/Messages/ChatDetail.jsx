@@ -16,7 +16,8 @@ import dayjs from "dayjs";
 const ChatDetail = () => {
   const { userId } = useParams();
   const { _id: currentUserId } = useUserInfo();
-  const { fullName, image } = useGetUserInfoByIdQuery(userId);
+  const { data: userInfo = {} } = useGetUserInfoByIdQuery(userId);
+  const { fullName, image } = userInfo;
   const [offset, setOffset] = useState(0);
   const limit = 10;
   const messageEndRef = useRef(null);
@@ -31,16 +32,24 @@ const ChatDetail = () => {
   const [updateSeenMessage] = useUpdateSeenMessageMutation();
 
   useEffect(() => {
-    if (userId) updateSeenMessage(userId);
+    if (userId) updateSeenMessage({ sender: userId });
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [updateSeenMessage, userId]);
+  }, [updateSeenMessage, userId, messages]);
 
   // Hàm dùng để nhóm messages
   const getGroupedMessages = (messages) => {
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return {};
+    }
+
     // Bước 1: Nhóm tin nhắn theo ngày
     const groupedByDate = messages.reduce((groups, msg) => {
-      // Lấy ngày từ thời gian tạo tin nhắn và định dạng thành "MM-DD-YYYY"
-      const date = dayjs(msg.createdAt).format("MM-DD-YYYY");
+      if (!msg || !msg.createdAt || !msg.sender) {
+        return groups; // Skip invalid messages
+      }
+
+      // Lấy ngày từ thời gian tạo tin nhắn và định dạng thành "YYYY-MM-DD"
+      const date = dayjs(msg.createdAt).format("YYYY-MM-DD");
 
       // Nếu chưa có nhóm cho ngày này, tạo một mảng rỗng
       if (!groups[date]) {
@@ -50,23 +59,12 @@ const ChatDetail = () => {
       // Thêm tin nhắn vào nhóm của ngày tương ứng
       groups[date].push(msg);
       return groups;
-      // {
-      //   "MM-DD-YYYY1": [message1, message2, ...],
-      //   "MM-DD-YYYY2": [message3, message4, ...],
-      //   ...
-      // }
     }, {});
 
     // Bước 2: Tạo cấu trúc dữ liệu mới để nhóm tin nhắn theo người gửi và thời gian
     const fullyGrouped = {};
 
     // Duyệt qua từng ngày và danh sách tin nhắn của ngày đó
-    // Object.entries(groupedByDate) sẽ trả về kết quả như sau:
-    // [
-    //   ["MM-DD-YYYY1", [message1, message2, ...]],
-    //   ["MM-DD-YYYY2", [message3, message4, ...]],
-    //   ...
-    // ]
     Object.entries(groupedByDate).forEach(([date, dateMessages]) => {
       // Khởi tạo mảng rỗng cho ngày này trong cấu trúc dữ liệu mới
       fullyGrouped[date] = [];
@@ -107,32 +105,13 @@ const ChatDetail = () => {
 
     // Trả về cấu trúc dữ liệu đã được nhóm đầy đủ
     return fullyGrouped;
-    // {
-    //   "YYYY-MM-DD": [
-    //     {
-    //       senderId: "user1",
-    //       startTime: "2023-01-01T10:00:00",
-    //       endTime: "2023-01-01T10:01:30",
-    //       messages: [message1, message2, ...]
-    //     },
-    //     {
-    //       senderId: "user2",
-    //       startTime: "2023-01-01T10:05:00",
-    //       endTime: "2023-01-01T10:06:00",
-    //       messages: [message3, message4, ...]
-    //     },
-    //     ...
-    //   ],
-    //   ...
-    // }
   };
 
-  // const scrollToBottom = () => {
-  //   messageRef.current?.scrollIntoView({ behavior: "smooth" });
-  // };
-  // useEffect(() => {
-  //   scrollToBottom();
-  // }, [messages]);
+  // Sử dụng useMemo để tránh tính toán lại khi không cần thiết
+  const groupedMessages = useMemo(
+    () => getGroupedMessages(messages),
+    [messages],
+  );
 
   return (
     <div className="flex h-[calc(100vh-110px)] flex-col overflow-hidden rounded-lg border-gray-300 bg-[#f8f7fa]">
@@ -159,65 +138,125 @@ const ChatDetail = () => {
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4">
         <div className="space-y-4">
-          {messages.map((message) => {
-            const isCurrentUser = message.sender._id === currentUserId;
-            const partner = isCurrentUser ? message.receiver : message.sender;
-
-            return (
-              <div
-                key={message.id}
-                className={`flex ${isCurrentUser ? "justify-end" : "justify-start"}`}
-              >
-                <div className="flex max-w-[70%]">
-                  {!isCurrentUser && (
-                    <UserAvatar
-                      name={partner.fullName}
-                      src={partner.image}
-                      className="mr-2 mb-1 !h-8 !w-8"
-                    />
-                  )}
-                  <div className="flex flex-col">
-                    <div
-                      className={`rounded-lg px-3 py-1.5 ${
-                        isCurrentUser
-                          ? "bg-primary-main self-end rounded-tr-none bg-[#247fc3] text-white"
-                          : "rounded-tl-none bg-white text-gray-800 shadow-sm"
-                      }`}
-                    >
-                      {message.message}
-                    </div>
-                    <div
-                      className={`mt-1 flex items-center text-xs ${isCurrentUser ? "justify-end" : "justify-start"}`}
-                    >
-                      <TimeAgo
-                        date={message.createdAt}
-                        className="text-gray-500"
-                      />
-                      {isCurrentUser && (
-                        <span className="ml-1 text-green-500">✓</span>
-                      )}
-                    </div>
+          {Object.keys(groupedMessages).length > 0 ? (
+            Object.entries(groupedMessages).map(([date, groups]) => (
+              <div key={`date-${date}`}>
+                {/* Hiển thị các nhóm tin nhắn trong ngày */}
+                <div className="my-4 flex justify-center">
+                  <div className="rounded-full bg-gray-200 px-3 py-1 text-xs text-gray-600">
+                    {dayjs(date).format("MMMM D, YYYY")}
                   </div>
-                  {isCurrentUser && (
-                    <UserAvatar
-                      isMyAvatar={true}
-                      className="mb-1 ml-2 !h-8 !w-8"
-                    />
-                  )}
                 </div>
+
+                {groups.map((group, groupIndex) => {
+                  // Kiểm tra tính hợp lệ của nhóm
+                  // Xác định người gửi và người nhận
+                  if (
+                    !group.messages ||
+                    group.messages.length === 0 ||
+                    !group.messages[0].sender
+                  ) {
+                    return null;
+                  }
+
+                  // Xác định người gửi và người nhận - partner
+                  const firstMessage = group.messages[0];
+                  const isCurrentUser =
+                    firstMessage.sender._id === currentUserId;
+                  const partner = isCurrentUser
+                    ? firstMessage.receiver
+                    : firstMessage.sender;
+
+                  if (!partner) return null;
+
+                  return (
+                    <div key={`group-${date}-${groupIndex}`} className="mb-4">
+                      <div
+                        className={`flex ${isCurrentUser ? "justify-end" : "justify-start"}`}
+                      >
+                        <div className="flex max-w-[70%]">
+                          {!isCurrentUser && (
+                            <UserAvatar
+                              name={partner.fullName}
+                              src={partner.image}
+                              className="mr-2 mb-6 !h-8 !w-8 self-end"
+                            />
+                          )}
+                          <div className="flex flex-col">
+                            {group.messages.map((message, msgIndex) => (
+                              <div
+                                key={
+                                  message._id ||
+                                  message.id ||
+                                  `msg-${date}-${groupIndex}-${msgIndex}`
+                                }
+                                className={`mb-1 ${
+                                  isCurrentUser ? "self-end" : ""
+                                }`}
+                              >
+                                <div
+                                  className={`rounded-lg px-3 py-1.5 ${
+                                    isCurrentUser
+                                      ? "bg-primary-main bg-[#247fc3] text-white"
+                                      : "bg-white text-gray-800 shadow-sm"
+                                  } ${
+                                    group.messages.length > 1
+                                      ? msgIndex === 0
+                                        ? isCurrentUser
+                                          ? "rounded-tr-none"
+                                          : "rounded-tl-none"
+                                        : msgIndex === group.messages.length - 1
+                                          ? isCurrentUser
+                                            ? "rounded-br-none"
+                                            : "rounded-bl-none"
+                                          : isCurrentUser
+                                            ? "rounded-r-none"
+                                            : "rounded-l-none"
+                                      : isCurrentUser
+                                        ? "rounded-tr-none"
+                                        : "rounded-tl-none"
+                                  }`}
+                                >
+                                  {message.message}
+                                </div>
+                              </div>
+                            ))}
+                            <div
+                              className={`mt-1 flex items-center text-xs ${isCurrentUser ? "justify-end" : "justify-start"}`}
+                            >
+                              <TimeAgo
+                                date={group.endTime}
+                                className="text-gray-500"
+                              />
+                              {isCurrentUser && (
+                                <span className="ml-1 text-green-500">✓</span>
+                              )}
+                            </div>
+                          </div>
+                          {isCurrentUser && (
+                            <UserAvatar
+                              isMyAvatar={true}
+                              className="mb-6 ml-2 !h-8 !w-8 self-end"
+                            />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })}
+            ))
+          ) : (
+            <div className="flex h-full items-center justify-center">
+              <p className="text-gray-500">No messages</p>
+            </div>
+          )}
           <div ref={messageEndRef} />
         </div>
       </div>
 
       {/* Message Input */}
-      <MessageCreation
-        userId={userId}
-        // onSendMessage={scrollToBottom}
-        messageEndRef={messageEndRef}
-      />
+      <MessageCreation userId={userId} messageEndRef={messageEndRef} />
     </div>
   );
 };
