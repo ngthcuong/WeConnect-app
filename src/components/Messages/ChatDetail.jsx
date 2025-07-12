@@ -11,6 +11,7 @@ import {
   useUpdateSeenMessageMutation,
 } from "@services/messageApi";
 import { useGetUserInfoByIdQuery } from "@services/userApi";
+import dayjs from "dayjs";
 
 const ChatDetail = () => {
   const { userId } = useParams();
@@ -33,6 +34,98 @@ const ChatDetail = () => {
     if (userId) updateSeenMessage(userId);
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [updateSeenMessage, userId]);
+
+  // Hàm dùng để nhóm messages
+  const getGroupedMessages = (messages) => {
+    // Bước 1: Nhóm tin nhắn theo ngày
+    const groupedByDate = messages.reduce((groups, msg) => {
+      // Lấy ngày từ thời gian tạo tin nhắn và định dạng thành "MM-DD-YYYY"
+      const date = dayjs(msg.createdAt).format("MM-DD-YYYY");
+
+      // Nếu chưa có nhóm cho ngày này, tạo một mảng rỗng
+      if (!groups[date]) {
+        groups[date] = [];
+      }
+
+      // Thêm tin nhắn vào nhóm của ngày tương ứng
+      groups[date].push(msg);
+      return groups;
+      // {
+      //   "MM-DD-YYYY1": [message1, message2, ...],
+      //   "MM-DD-YYYY2": [message3, message4, ...],
+      //   ...
+      // }
+    }, {});
+
+    // Bước 2: Tạo cấu trúc dữ liệu mới để nhóm tin nhắn theo người gửi và thời gian
+    const fullyGrouped = {};
+
+    // Duyệt qua từng ngày và danh sách tin nhắn của ngày đó
+    // Object.entries(groupedByDate) sẽ trả về kết quả như sau:
+    // [
+    //   ["MM-DD-YYYY1", [message1, message2, ...]],
+    //   ["MM-DD-YYYY2", [message3, message4, ...]],
+    //   ...
+    // ]
+    Object.entries(groupedByDate).forEach(([date, dateMessages]) => {
+      // Khởi tạo mảng rỗng cho ngày này trong cấu trúc dữ liệu mới
+      fullyGrouped[date] = [];
+      // Biến tạm để lưu nhóm tin nhắn hiện tại đang xử lý
+      let groupedByMinutues = null;
+
+      // Duyệt qua từng tin nhắn trong ngày
+      dateMessages.forEach((msg) => {
+        // Chuyển đổi thời gian tạo tin nhắn thành đối tượng dayjs để dễ so sánh
+        const messageTime = dayjs(msg.createdAt);
+
+        // Kiểm tra xem có cần tạo nhóm mới hay không dựa trên 3 điều kiện:
+        // 1. Chưa có nhóm nào (groupedByMinutues là null)
+        // 2. Người gửi khác với người gửi của nhóm hiện tại
+        // 3. Thời gian giữa tin nhắn hiện tại và tin nhắn cuối cùng của nhóm > 2 phút
+        if (
+          !groupedByMinutues ||
+          groupedByMinutues.senderId !== msg.sender._id ||
+          messageTime.diff(dayjs(groupedByMinutues.endTime), "minute") > 2
+        ) {
+          // Tạo nhóm mới với thông tin từ tin nhắn hiện tại
+          groupedByMinutues = {
+            senderId: msg.sender._id, // ID của người gửi
+            startTime: msg.createdAt, // Thời gian bắt đầu nhóm (thời gian của tin nhắn đầu tiên)
+            endTime: msg.createdAt, // Thời gian kết thúc nhóm (thời gian của tin nhắn cuối cùng)
+            messages: [msg], // Mảng chứa các tin nhắn trong nhóm
+          };
+          // Thêm nhóm mới vào mảng của ngày tương ứng
+          fullyGrouped[date].push(groupedByMinutues);
+        } else {
+          // Nếu không cần tạo nhóm mới, thêm tin nhắn vào nhóm hiện tại
+          groupedByMinutues.messages.push(msg);
+          // Cập nhật thời gian kết thúc của nhóm
+          groupedByMinutues.endTime = msg.createdAt;
+        }
+      });
+    });
+
+    // Trả về cấu trúc dữ liệu đã được nhóm đầy đủ
+    return fullyGrouped;
+    // {
+    //   "YYYY-MM-DD": [
+    //     {
+    //       senderId: "user1",
+    //       startTime: "2023-01-01T10:00:00",
+    //       endTime: "2023-01-01T10:01:30",
+    //       messages: [message1, message2, ...]
+    //     },
+    //     {
+    //       senderId: "user2",
+    //       startTime: "2023-01-01T10:05:00",
+    //       endTime: "2023-01-01T10:06:00",
+    //       messages: [message3, message4, ...]
+    //     },
+    //     ...
+    //   ],
+    //   ...
+    // }
+  };
 
   // const scrollToBottom = () => {
   //   messageRef.current?.scrollIntoView({ behavior: "smooth" });
