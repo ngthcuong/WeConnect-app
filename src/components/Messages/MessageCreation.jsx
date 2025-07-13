@@ -5,6 +5,8 @@ import { useSendMessageMutation } from "@services/messageApi";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNotification } from "@hooks/index";
+import { socket } from "@context/SocketProvider";
+import { Events } from "@libs/constants";
 
 const MessageCreation = ({ userId, messageEndRef }) => {
   const dispatch = useDispatch();
@@ -27,6 +29,8 @@ const MessageCreation = ({ userId, messageEndRef }) => {
         notificationTypeId: response._id,
         receiverId: userId,
       });
+
+      socket.emit(Events.CREATE_MESSAGE, response);
 
       messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
       // if (onSendMessage) onSendMessage();

@@ -1,5 +1,6 @@
 import TimeAgo from "@components/TimeAgo";
 import UserAvatar from "@components/UserAvatar";
+import { Link } from "react-router-dom";
 
 const NotificationItem = (notification) => {
   if (notification.like)
@@ -47,7 +48,10 @@ const NotificationItem = (notification) => {
 
   if (notification.message)
     return (
-      <div className="flex items-center gap-1">
+      <Link
+        to={`/messages/${notification.author?._id}`}
+        className="flex w-full items-center gap-1 rounded-md transition-colors hover:bg-gray-100"
+      >
         <UserAvatar
           name={notification.author?.fullName}
           src={notification.author?.image}
@@ -64,7 +68,7 @@ const NotificationItem = (notification) => {
             className="text-dark-400 -mt-[1px] text-xs"
           />
         </div>
-      </div>
+      </Link>
     );
 
   return "";

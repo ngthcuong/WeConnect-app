@@ -6,7 +6,7 @@ import { createContext, useContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
 
-export const socket = io(import.meta.env.VITE_BASE_URL, {
+export const socket = io("https://api.holetex.com", {
   autoConnect: false,
   path: "/v1/we-connect/socket.io",
 });
@@ -60,9 +60,41 @@ const SocketProvider = ({ children }) => {
       );
     });
 
+    socket.on(Events.CREATE_MESSAGE, (data) => {
+      console.log("[SEND_MESSAGE]", { data });
+
+      dispatch(
+        rootApi.util.updateQueryData(
+          "getMessages",
+          { userId: data.sender._id },
+          (draft) => {
+            draft.messages.push(data);
+          },
+        ),
+      );
+
+      dispatch(
+        rootApi.util.updateQueryData("getConversations", undefined, (draft) => {
+          let currentConversationIndex = draft.findIndex(
+            (message) =>
+              message.sender._id === data.sender._id ||
+              message.receiver._id === data.sender._id,
+          );
+
+          if (currentConversationIndex !== -1) {
+            draft.splice(currentConversationIndex, 1);
+          }
+
+          draft.unshift(data);
+          // draft.messages.push(data);
+        }),
+      );
+    });
+
     // Clean up function được chạy trước tiên trước khi chạy các dòng lệnh ở trên
     return () => {
       socket.off(Events.CREATE_NOTIFICATION_REQUEST);
+      socket.off(Events.CREATE_MESSAGE);
     };
   }, [dispatch]);
 

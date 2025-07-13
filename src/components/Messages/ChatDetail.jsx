@@ -28,7 +28,7 @@ const ChatDetail = () => {
       offset,
       limit,
     },
-    { pollingInterval: 2000 },
+    // { pollingInterval: 2000 },
   );
   const messages = useMemo(() => data.messages || [], [data.messages]);
 

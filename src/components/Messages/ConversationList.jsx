@@ -9,9 +9,10 @@ import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 const ConversationList = () => {
-  const { data: conversations = [] } = useGetConversationQuery(undefined, {
-    pollingInterval: 2000,
-  });
+  // const { data: conversations = [] } = useGetConversationQuery(undefined, {
+  //   pollingInterval: 2000,
+  // });
+  const { data: conversations = [] } = useGetConversationQuery();
   const [searchQuery, setSearchQuery] = useState("");
   const { userId: activeUserId } = useParams();
   const { _id: currentUserId } = useUserInfo();
@@ -63,9 +64,9 @@ const ConversationList = () => {
               <Link to={`/messages/${partner._id}`} key={partner._id}>
                 <div
                   className={classNames(
-                    "relative flex items-center gap-2 px-4 py-3 hover:bg-[#247fc3]",
+                    "relative flex items-center gap-2 px-4 py-3 hover:bg-[#1a5d90]",
                     {
-                      "hover:bg-primary-dark bg-[#2b97e9] text-white": isActive,
+                      "hover:bg-primary-dark bg-[#247fc3] text-white": isActive,
                     },
                   )}
                 >
