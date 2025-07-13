@@ -15,6 +15,7 @@ export const messageApi = rootApi.injectEndpoints({
         url: `/messages`,
         params: { userId, offset, limit },
       }),
+      keepUnusedDataFor: 0,
       serializeQueryArgs: ({ queryArgs }) => ({ userId: queryArgs.userId }),
       providesTags: (result, error, { userId }) => {
         return [{ type: "MESSAGES", id: userId }];

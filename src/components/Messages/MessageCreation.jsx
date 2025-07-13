@@ -4,18 +4,30 @@ import { showSnackbar } from "@redux/slices/snackBarSlice";
 import { useSendMessageMutation } from "@services/messageApi";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
+import { useNotification } from "@hooks/index";
 
 const MessageCreation = ({ userId, messageEndRef }) => {
   const dispatch = useDispatch();
+  const { createNotification } = useNotification();
 
   const [message, setMessage] = useState("");
-
   const [sendMessage] = useSendMessageMutation();
 
   const handleSendMessage = async () => {
     try {
-      await sendMessage({ message, receiver: userId }).unwrap();
+      const response = await sendMessage({
+        message,
+        receiver: userId,
+      }).unwrap();
       setMessage("");
+
+      createNotification({
+        postId: null,
+        notificationType: "message",
+        notificationTypeId: response._id,
+        receiverId: userId,
+      });
+
       messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
       // if (onSendMessage) onSendMessage();
     } catch (error) {
