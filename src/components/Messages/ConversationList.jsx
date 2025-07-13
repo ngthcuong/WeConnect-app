@@ -9,7 +9,9 @@ import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 const ConversationList = () => {
-  const { data: conversations = [] } = useGetConversationQuery();
+  const { data: conversations = [] } = useGetConversationQuery(undefined, {
+    pollingInterval: 2000,
+  });
   const [searchQuery, setSearchQuery] = useState("");
   const { userId: activeUserId } = useParams();
   const { _id: currentUserId } = useUserInfo();
@@ -80,7 +82,7 @@ const ConversationList = () => {
                         noWrap
                         sx={{
                           fontWeight: isUnread ? 800 : 600,
-                          maxWidth: 100,
+                          maxWidth: 170,
                         }}
                       >
                         {partner.fullName}

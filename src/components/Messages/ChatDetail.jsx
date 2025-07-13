@@ -22,11 +22,14 @@ const ChatDetail = () => {
   const limit = 10;
   const messageEndRef = useRef(null);
 
-  const { data = [] } = useGetMessagesQuery({
-    userId,
-    offset,
-    limit,
-  });
+  const { data = [] } = useGetMessagesQuery(
+    {
+      userId,
+      offset,
+      limit,
+    },
+    { pollingInterval: 2000 },
+  );
   const messages = useMemo(() => data.messages || [], [data.messages]);
 
   const [updateSeenMessage] = useUpdateSeenMessageMutation();
