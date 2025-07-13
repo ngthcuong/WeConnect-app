@@ -32,6 +32,7 @@ const MessageCreation = ({ userId, messageEndRef }) => {
 
       socket.emit(Events.CREATE_MESSAGE, response);
 
+      // Cuộn xuống tin nhắn mới nhất
       messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
       // if (onSendMessage) onSendMessage();
     } catch (error) {

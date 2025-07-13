@@ -60,7 +60,7 @@ const SocketProvider = ({ children }) => {
       );
     });
 
-    socket.on(Events.CREATE_MESSAGE, (data) => {
+    socket.on(Events.SEND_MESSAGE, (data) => {
       console.log("[SEND_MESSAGE]", { data });
 
       dispatch(
@@ -94,7 +94,7 @@ const SocketProvider = ({ children }) => {
     // Clean up function được chạy trước tiên trước khi chạy các dòng lệnh ở trên
     return () => {
       socket.off(Events.CREATE_NOTIFICATION_REQUEST);
-      socket.off(Events.CREATE_MESSAGE);
+      socket.off(Events.SEND_MESSAGE);
     };
   }, [dispatch]);
 
