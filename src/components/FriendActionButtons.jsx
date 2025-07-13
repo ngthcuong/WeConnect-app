@@ -9,6 +9,7 @@ import {
 import { Button, CircularProgress } from "@mui/material";
 import { useSendFriendRequestMutation } from "@services/friendApi";
 import React from "react";
+import { Link } from "react-router-dom";
 
 const FriendActionButtons = ({ userInfo }) => {
   const [sendFriendRequest, { isLoading }] = useSendFriendRequestMutation();
@@ -34,6 +35,8 @@ const FriendActionButtons = ({ userInfo }) => {
           startIcon={<Message />}
           style={{ textTransform: "none" }}
           size="small"
+          LinkComponent={Link}
+          to={`/messages/${userInfo._id}`}
         >
           Message
         </Button>

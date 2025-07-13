@@ -46,29 +46,31 @@ const FriendCard = ({ friend }) => (
 
         {/* Action buttons */}
         <div className="flex w-full gap-2">
-          <Button
-            variant="outlined"
-            size="small"
-            startIcon={<Message />}
-            className="flex-1"
-            sx={{
-              textTransform: "none",
-              borderColor: "#246AA3",
-              color: "#246AA3",
-              "&:hover": {
+          <Link to={`/messages/${friend._id}`}>
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<Message />}
+              className="flex-1"
+              sx={{
+                textTransform: "none",
                 borderColor: "#246AA3",
-                backgroundColor: "rgba(36, 106, 163, 0.04)",
-              },
-            }}
-          >
-            Message
-          </Button>
+                color: "#246AA3",
+                "&:hover": {
+                  borderColor: "#246AA3",
+                  backgroundColor: "rgba(36, 106, 163, 0.04)",
+                },
+              }}
+            >
+              Message
+            </Button>
+          </Link>
           <Button
             variant="outlined"
             size="small"
             sx={{
               minWidth: "40px",
-              padding: "6px",
+              padding: "2px",
               borderColor: "#e0e0e0",
               color: "#666",
             }}

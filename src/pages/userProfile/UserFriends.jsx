@@ -21,7 +21,7 @@ const UserFriends = () => {
   const { data } = useGetFriendsByUserIdQuery(userId);
   console.log(data);
 
-  const friends = data.friends || [];
+  const friends = data?.friends || [];
 
   const filterOptions = [
     { value: "all", label: "All Friends", count: friends.length },
